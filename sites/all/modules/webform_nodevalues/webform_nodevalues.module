@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Provides information about a current node to an attached Webform block.
+ *
+ * The module is inspired by http://drupal.org/node/1470748#comment-5781628.
+ *
+ * @author Olaf Grabienski <grabienski@buerobackbord.de>
+ */
+
+/**
+ * Implements hook_help.
+ */
+function webform_nodevalues_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case "admin/help#webform_nodevalues":
+      $output = '<p>'. t("The Webform Nodevalues module provides information about a current node to an attached Webform block. Actually Webform does not know about the current node, so it is not possible to use information provided by the node. With this module you can populate a Webform field with values of the current node. To configure this module, you have to edit the module file (webform_nodevalues.module). For more detailed instructions, see the README file of the module.") .'</p>';
+      break;
+  }
+  return $output;
+}
+ 
+/**
+ * Implements hook_form_alter to provide node values to Webform.
+ */
+function webform_nodevalues_form_alter(&$form, $form_state, $form_id) {
+  // 1. Webform ID
+  if ($form_id == 'webform_client_form_123456789') {
+    if ($node = menu_get_object()) {
+      // 2. Webform field for the node title
+	  $form['submitted']['my_webform_field_key']['#value'] = $node->title;
+	  // 3. Webform field for a CCK field
+      $form['submitted']['my_webform_field_key']['#value'] = $node->my_cck_field[0]['value'];
+	}
+  }
+}

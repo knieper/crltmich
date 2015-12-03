@@ -1,0 +1,3 @@
+RewriteRule ^node/970$ http://crlt.umich.edu/node/58460 [L,R=301]
+RewriteRule ^grants-awards/tipwinners2011#lcc$ http://crlt.umich.edu/node/973  [L,R=301]
+RewriteRule ^grants-awards/tipwinners2011#ethics$ http://crlt.umich.edu/node/974 [L,R=301]

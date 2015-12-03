@@ -1,0 +1,44 @@
+/**
+ * Implementation of hook_menu.
+ * Create our new path to the new login screen.
+ */
+function moveloginpage_menu() {
+  $items = array();
+
+  $items['supersecretloginplace'] = array(
+    'title' => 'Super Secret Login Page',
+    'page callback' => 'moveloginpage_user_page',
+    'page arguments' => array(true),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_menu_alter.
+ * Tell the menu system to use our custom callback rather than the core callback.
+ */
+function moveloginpage_menu_alter(&$items) {
+  $items['user']['page callback'] = 'moveloginpage_user_page';
+}
+
+/**
+ * Access callback for path /user.
+ *
+ * Displays user profile if user is logged in, or login form for anonymous
+ * users if using our special path, access denied if using default path.
+ */
+function moveloginpage_user_page($show = false) {
+  global $user;
+  if ($user->uid) {
+    menu_set_active_item('user/'. $user->uid);
+    return menu_execute_active_handler();
+  }
+  else if ($show) {
+    return drupal_get_form('user_login');
+  }
+  
+  drupal_access_denied();
+}
