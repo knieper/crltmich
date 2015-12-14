@@ -1,3 +1,0 @@
-name = "move login page module"
-description = "moves login page to a user defined location"
-core = 6.x

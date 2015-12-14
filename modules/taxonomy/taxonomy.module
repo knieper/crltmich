@@ -1289,10 +1289,6 @@ function taxonomy_nodeapi(&$node, $op, $arg = 0) {
  * Implementation of hook_nodeapi('update_index').
  */
 function taxonomy_node_update_index(&$node) {
-/*next three lines added mbakewel 2013-08-16 check change log google doc for details*/ 
-  if (empty($node->taxonomy)) {
-    return;
-  }
   $output = array();
   foreach ($node->taxonomy as $term) {
     $output[] = $term->name;

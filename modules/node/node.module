@@ -1834,12 +1834,8 @@ function node_update_index() {
  *   The node to index.
  */
 function _node_index_node($node) {
-/* mbakewel 2013-08-16 check change log google doc for details */
-  $nid = $node->nid;
   $node = node_load($node->nid);
-  if (!isset($node->nid)) {
-    watchdog('debug', 'Problem node: '.$nid);
-  }
+
   // save the changed time of the most recent indexed node, for the search results half-life calculation
   variable_set('node_cron_last', $node->changed);
 
