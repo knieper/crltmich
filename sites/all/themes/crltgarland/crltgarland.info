@@ -1,0 +1,5 @@
+name = CRLT garland
+description = CRLT subtheme of Garland
+core = 6.x
+base theme = garland
+stylesheets[all][] = style.css 
