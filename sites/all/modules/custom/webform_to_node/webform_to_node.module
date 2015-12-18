@@ -1,6 +1,5 @@
 <?php
 // $Id: webform_to_node.module
-//srk 10-30-15 edited links to submissions to remove hardcoded url
 
 /**
  * Returns the user id for the GTC user.

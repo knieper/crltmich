@@ -1,6 +1,0 @@
-name = "Webform Nodevalues"
-description = "Provides information about a current node to an attached Webform block."
-core = 6.x
-version = "6.x-1.dev"
-package = Webform
-dependencies[] = webform
