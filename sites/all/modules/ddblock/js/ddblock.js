@@ -1,4 +1,4 @@
-// $Id$
+// $Id: ddblock.js,v 1.3 2009/02/20 16:09:18 ppblaauw Exp $
 
 /**
   * Set image settings

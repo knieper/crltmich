@@ -1,4 +1,4 @@
-// $Id$
+// $Id: README.txt,v 1.4 2009/02/20 16:09:18 ppblaauw Exp $
 
 Note: This is version RC5 of the module. Please test and review the module and post
 your issues on the project page http://drupal.org/project/ddblock to help improve
