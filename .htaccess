@@ -1,3 +1,8 @@
+#CosignRequireFactor UMICH.EDU
+AddDefaultCharset UTF-8
+
+AuthType Cosign
+
 #
 # Apache/PHP/Drupal settings:
 #
@@ -8,13 +13,13 @@
 </FilesMatch>
 
 # Don't show directory listings for URLs which map to a directory.
-Options -Indexes
+#Options -Indexes
 
 # Follow symbolic links in this directory.
-Options +FollowSymLinks
+#Options +FollowSymLinks
 
 # Make Drupal handle any 404 errors.
-ErrorDocument 404 /index.php
+#ErrorDocument 404 /index.php
 
 # Force simple error message for requests for non-existent favicon.ico.
 <Files favicon.ico>
@@ -36,6 +41,8 @@ DirectoryIndex index.php
   php_value mbstring.http_input             pass
   php_value mbstring.http_output            pass
   php_value mbstring.encoding_translation   0
+  php_value post_max_size  100M
+  php_value upload_max_filesize  100M
 </IfModule>
 
 # PHP 4, Apache 2.
@@ -46,17 +53,19 @@ DirectoryIndex index.php
   php_value mbstring.http_input             pass
   php_value mbstring.http_output            pass
   php_value mbstring.encoding_translation   0
+  php_value post_max_size  100M
+  php_value upload_max_filesize  100M
 </IfModule>
 
 # PHP 5, Apache 1 and 2.
-<IfModule mod_php5.c>
-  php_value magic_quotes_gpc                0
-  php_value register_globals                0
-  php_value session.auto_start              0
-  php_value mbstring.http_input             pass
-  php_value mbstring.http_output            pass
-  php_value mbstring.encoding_translation   0
-</IfModule>
+#<IfModule mod_php5.c>
+#  php_value magic_quotes_gpc                0
+#  php_value register_globals                0
+#  php_value session.auto_start              0
+#  php_value mbstring.http_input             pass
+#  php_value mbstring.http_output            pass
+#  php_value mbstring.encoding_translation   0
+#</IfModule>
 
 # Requires mod_expires to be enabled.
 <IfModule mod_expires.c>
@@ -105,6 +114,109 @@ DirectoryIndex index.php
   # If your site is running in a VirtualDocumentRoot at http://example.com/,
   # uncomment the following line:
   # RewriteBase /
+RewriteRule ^faculty\/faculty\.php$ http://www.crlt.umich.edu/programs/faculty [L,R=301]
+RewriteRule ^50th\/index.php$ http://www.crlt.umich.edu/50th-celebration [L,R=301]
+RewriteRule ^50th\/index_50thPhotoGallery.php$ http://www.crlt.umich.edu/50th-celebration/index-50th-photo-gallery [L,R=301]
+RewriteRule ^gsis\/gsi.php$ http://www.crlt.umich.edu/programs/gradstudents-post-docs [L,R=301]
+RewriteRule ^gsis\/gsiprograms.php$ http://www.crlt.umich.edu/programs/gradstudents-post-docs/new-GSIs [L,R=301]
+RewriteRule ^gsis\/gsi_seminars.php$ http://www.crlt.umich.edu/events [L,R=301]
+RewriteRule ^gsis\/pff.php$ http://www.crlt.umich.edu/programs/pff [L,R=301]
+RewriteRule ^50th\/50thVideo_podium.php$ http://www.crlt.umich.edu/50th-celebration/50thVideo_podium [L,R=301]
+RewriteRule ^grants\/idfgrant\.php$ http://www.crlt.umich.edu/grants-awards/instructional-development-fund [L,R=301]
+#RewriteRule ^grants\/grants.php$ http://www.crlt.umich.edu/grants-awards/ [L,R=301]
+RewriteRule ^50th\/50thVideo_panel.php$ http://www.crlt.umich.edu/50th-celebration/50thVideo_panel [L,R=301]
+RewriteRule ^50th\/posterfair_6.7.12.php$ http://www.crlt.umich.edu/50th-celebration/posterfair [L,R=301]
+RewriteRule ^faculty\/faculty.php$ http://www.crlt.umich.edu/programs/faculty [L,R=301]
+RewriteRule ^grants\/grants.php$ http://www.crlt.umich.edu/grants-awards/crlt-grants [L,R=301]
+RewriteRule ^grants\/grants$ http://www.crlt.umich.edu/grants-awards/crlt-grants [L,R=301]
+RewriteRule ^faculty\/facorientation.php$ http://www.crlt.umich.edu/programs/teaching-orientations/ [L,R=301]
+RewriteRule ^resources\/consultations-teaching\/midterm-student-feedback$ http://www.crlt.umich.edu/msf/ [L,R=301]
+RewriteRule ^index.html$ http://www.crlt.umich.edu/ [L,R=301]
+RewriteRule ^faculty\/facseminar.php$ http://www.crlt.umich.edu/events [L,R=301]
+RewriteRule ^faculty\/psot.php$ http://www.crlt.umich.edu/programs/psot [L,R=301]
+RewriteRule ^faculty\/consult.php$ http://www.crlt.umich.edu/consultations-teaching [L,R=301]
+RewriteRule ^faculty\/coursedev.php$ http://www.crlt.umich.edu/consultations-teaching/course-planning [L,R=301]
+RewriteRule ^faculty\/facpublications.php$ http://www.crlt.umich.edu/resources/publications [L,R=301]
+RewriteRule ^faculty\/teachingawards.php$ http://www.crlt.umich.edu/grants-awards/teachingawards [L,R=301]
+RewriteRule ^gsis\/gsi.php$ http://www.crlt.umich.edu/programs/gradstudents-post-docs [L,R=301]
+RewriteRule ^gsis\/gsi_seminars.php$ http://www.crlt.umich.edu/events [L,R=301]
+RewriteRule ^gsis\/pff.php$ http://www.crlt.umich.edu/programs/pff [L,R=301]
+RewriteRule ^gsis\/gsiconsultations.php$ http://www.crlt.umich.edu/consultations-teaching [L,R=301]
+RewriteRule ^gsis\/gsimsf.php$ http://www.crlt.umich.edu/consultations-teaching/midterm-student-feedback [L,R=301]
+RewriteRule ^departments\/departments.php$ http://www.crlt.umich.edu/programs/deans-departments-chairs [L,R=301]
+RewriteRule ^departments\/customized.php$ http://www.crlt.umich.edu/programs/customized [L,R=301]
+RewriteRule ^departments\/evalservices.php$ http://www.crlt.umich.edu/assessment/assess-services [L,R=301]
+RewriteRule ^publinks\/publinks.php$ http://www.crlt.umich.edu/resources/publications [L,R=301]
+RewriteRule ^TIP\/2012.php$ http://www.crlt.umich.edu/node/514 [L,R=301]
+RewriteRule ^grants\/idfgrant.php$ http://www.crlt.umich.edu [L,R=301]
+RewriteRule ^TIP\/index$ http://www.crlt.umich.edu/grants-awards/tip [L,R=301]
+RewriteRule ^grants\/lecturegrant.php$ http://www.crlt.umich.edu/grants-awards/lecturergrant [L,R=301]
+RewriteRule ^grants\/whitakergrant.php$ http://www.crlt.umich.edu/grants-awards/gilbert-whitaker-fund-i [L,R=301]
+RewriteRule ^grants\/whitakergrant_stage2.php$ http://www.crlt.umich.edu/grants-awards/whitaker-grants-stage-ii [L,R=301]
+RewriteRule ^grants\/islgrant.php$ http://www.crlt.umich.edu/grants-awards/isl [L,R=301]
+RewriteRule ^grants\/fdfgrant.php$ http://www.crlt.umich.edu/grants-awards/fdfgrant [L,R=301]
+RewriteRule ^grants\/ttigrant.php$ http://www.crlt.umich.edu/grants-awards/TTI [L,R=301]
+RewriteRule ^assessment\/index.php$ http://www.crlt.umich.edu/assessment [L,R=301]
+RewriteRule ^evaluation\/evaluation.php$ http://www.crlt.umich.edu/assessment/assess-services [L,R=301]
+RewriteRule ^tstrategies\/teachings.php$ http://www.crlt.umich.edu/resources/teaching-strategies [L,R=301]
+RewriteRule ^gsis\/pre_1.php$ http://www.crlt.umich.edu/gsis/cc_letter [L,R=301]
+RewriteRule ^gsis\/pre_2.php$ http://www.crlt.umich.edu/gsis/guidebook_intro [L,R=301]
+RewriteRule ^msf$ http://www.crlt.umich.edu/consultations/midterm-student-feedback [L,R]
+RewriteRule ^consultations-teaching\/midterm-student-feedback$ http://www.crlt.umich.edu/consultations/midterm-student-feedback [L,R]
+RewriteRule ^inst\/inst(.*)$ http://www.crlt.umich.edu/teaching-technology [L,R=301]
+RewriteRule ^tstrategies\/tseot$ http://www.crlt.umich.edu/resources/evaluation-teaching [L,R=301]
+RewriteRule ^tstrategies\/teachings$ http://www.crlt.umich.edu/resources/ [L,R=301]
+RewriteRule ^tstrategies\/tscd$ http://www.crlt.umich.edu/assessment/curriculumdesign [L,R=301]
+RewriteRule ^gsis\/reggsiPFF$ http://www.crlt.umich.edu/programs/reggsiPFF [L,R=301]
+RewriteRule ^gsis\/P8_0$ http://www.crlt.umich.edu/P8_0 [L,R=301]
+RewriteRule ^gsis\/gsiconsultation$ http://www.crlt.umich.edu/consultations-teaching [L,R=301]
+RewriteRule ^publinks\/faqlinks$ http://www.crlt.umich.edu/publinks/faq [L,R=301]
+RewriteRule ^gsis\/onedaypff$ http://www.crlt.umich.edu/programs/onedaypff [L,R=301]
+RewriteRule ^consult$ http://www.crlt.umich.edu/consultations-teaching [L,R=301]
+RewriteRule ^certificate$ http://sitemaker.umich.edu/um.gtc [L,R]
+RewriteRule ^publinks\/occasional$ http://www.crlt.umich.edu/resources/occasional [L,R=301]
+RewriteRule ^gsis\/gsitowebreg$ http://www.crlt.umich.edu/programs/teaching-orientations\/GSITOwebreg [L,R=301]
+#RewriteRule ^publinks\/(*.).pdf$ http://www.crlt.umich.edu/sites/default/files/resource_files/$1.pdf [L,R=301]
+RewriteRule ^assessment\/curriculumdesignresources$ http://www.crlt.umich.edu/assessment/curriculumdesign [L,R=301]
+RewriteRule ^assessment\/assessmentprojects$ http://www.crlt.umich.edu/assessment/assess-services [L,R=301]
+RewriteRule ^tstrategies\/tstt$ http://www.crlt.umich.edu/teaching-technology [L,R=301]
+RewriteRule ^assessment-evaluation\/assessment-and-evaluation-resources$ http://www.crlt.umich.edu/assessment [L,R=301]
+RewriteRule ^assessment\/largestudies$ http://www.crlt.umich.edu/assessment/collectingdata [L,R=301]
+  RewriteRule ^publinks\/(.*)pdf$ http://www.crlt.umich.edu/sites/default/files/resource_files/$1pdf [L,R,NC]
+  RewriteCond %{QUERY_STRING} destination=node%25252F(\d+)
+  RewriteCond %{REQUEST_URI} !cancel
+  RewriteRule .* https://www.crlt.umich.edu/node/%1? [R,L]
+
+  RewriteCond %{QUERY_STRING} destination=node%25252F(\d+)%252523comment-form
+  RewriteRule .* https://www.crlt.umich.edu/node/%1#comment-form [R,L]
+  #RewriteRule ^(.*)5252(.*)$ http://www.crlt.umich.edu/$1$2 [L,R=301]
+
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{REQUEST_URI} ^(/imp/enroll|/imp/findmentor|/imp/reimbursementrequest|imp/facultymentordirectory)$
+  RewriteRule ^imp\/(.*)$ https://www.crlt.umich.edu/imp/$1 [L,R,NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{REQUEST_URI} /account/events/attended
+  RewriteRule ^account/events/attended$ https://www.crlt.umich.edu/account/events/attended [L,R,NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{REQUEST_URI} /bio171-005
+  RewriteRule ^bio171-005$ https://www.crlt.umich.edu/bio171-005 [L,R,NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{REQUEST_URI} /bio171f12msf
+  RewriteRule ^bio171f12msf$ https://www.crlt.umich.edu/bio171f12msf [L,R,NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{REQUEST_URI} /signup/cancel/.*
+  RewriteRule ^signup/cancel/(.*)$ https://www.crlt.umich.edu/signup/cancel/$1? [L,R,NC]
+
+#[L,R,NC]
+  RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/node/%1/ [L,R,NC]
+  RewriteCond %{QUERY_STRING} !(\d+)$
+  RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/ [L,R,NC]
+
+  RewriteCond %{REQUEST_URI} !=/index.php
+  RewriteCond %{REQUEST_URI} !^/theatre
+  RewriteCond %{REQUEST_URI} !^/CRLT50
+  RewriteCond %{REQUEST_URI} !^/update.php
+  RewriteRule ^(.*)\.php$ http://www.crlt.umich.edu/$1/ [L,R=301]
 
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
