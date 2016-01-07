@@ -46,6 +46,9 @@ function crlt_signup_form_alter(&$form, &$form_state, $form_id) {
       $prefix = '+ ' . l('CRLT Signup Overview', 'crlt/signup/overview') . '<br />' .
                 '+ ' . l('Bulk Signup Users', 'crlt/signup/bulk-users/' . $form['nid']['#value']) . '<br />' .
                 '+ ' . l('Events Calendar', 'eventscalendar');
+     //adding an initialization of '#prefix', 1/16 SRK
+     $form['#prefix'] = isset($form['#prefix']) ? $form['#prefix'] : '';
+     //returning to original code           
       $form['#prefix'] .= $prefix;
     }
     
