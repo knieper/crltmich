@@ -6,6 +6,35 @@
 
 /* Write your all CSS below this comment.
 -------------------------------------------------------------- */
+/* - - - - - - - - - - -PAM ADDED - - - - - - - - - - - - -*/
+/* Column width formatting for PFF_Resources - - - - - - -*/
+
+#pid-PFF_Resources .views-field-title {
+	vertical-align: top;
+	width: 25%;PFF_Resources
+}
+#pid-PFF_Resources .views-field-field-grant-application-overview-value {
+	vertical-align: top;
+	width: 75%;
+}
+#pid-PFF_Resources .imagefield-field_thumbnail 
+{
+height:100px;
+width:100px;
+}
+#pid-PFF_Resources .views-field-title {
+	vertical-align:top;
+}
+
+#pid-PFF_Resources .imagefield-field_thumbnail 
+{
+height:100px;
+width:100px;
+}
+#pid-PFF_Resources .views-field-title {
+	vertical-align:top;
+}
+
 /* - - - - - - - - - - - JERI ADDED - - - - - - - - - - - - */
 /*Column width formatting viewfundedgrants View*/
 #pid-viewfundedgrants .views-field-title {
@@ -146,6 +175,8 @@ width:auto;
 #pid-all-video .views-field-title {
 	vertical-align:top;
 }
+
+
 
 /* - - - - - - - - - - - GTC+ faculty mentor table - - - - - - - - - - - - */
 #pid-cert-dm-facultymentordirectory .views-field-field-first-name-value {
