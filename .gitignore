@@ -22,3 +22,8 @@ sites/all/README.txt
 sites/all/modules/README.txt
 sites/all/themes/README.txt
 
+
+#ignore devel module
+sites/all/modules/devel
+sites/all/modules/devel/*
+
