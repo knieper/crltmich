@@ -120,6 +120,7 @@ function _crlt_certificate_user_certificates_access_callback() {
   return TRUE;
 }*/
 
+
 /**
  * Implements hook_form_alter().
  */
@@ -308,8 +309,9 @@ function crlt_certificate_node_form_validate($form, &$form_state) {
  *
  */
 function crlt_certificate_form_after_build($form, &$form_state) {
+  //drupal_set_message( '<pre>'.print_r($form, TRUE).'</pre>');
   //drupal_set_message('<pre>' . print_r($form['#node']->field_certificate_type, true) . '</pre>');
-  //drupal_set_message('<pre>' . print_r($form['#wf'], true) . '</pre>');
+ // drupal_set_message('<pre>' . print_r($form['#wf'], true) . '</pre>');
   global $user;
 
   // Grab the nid.
@@ -325,8 +327,11 @@ function crlt_certificate_form_after_build($form, &$form_state) {
   $new_node = !$nid ? TRUE : FALSE;
 
   // What's the current workflow name and state id?
-  $workflow_name = $form['#wf']->name;
-  $sid = $form['workflow'][$workflow_name]['#default_value'];
+  //$workflow_name = $form['#wf']->name;
+  //$sid = $form['workflow'][$workflow_name]['#default_value'];
+  
+  //storage of workflow was changed at some point so sid was not getting set 2-22-16
+  $sid = $form['#node']->_workflow;
 
   // Since we are having issues making proper form alterations to the workflow form
   // and we need the workflow form to be present to access some data from it, we're
@@ -391,7 +396,9 @@ function crlt_certificate_form_after_build($form, &$form_state) {
 
       // Form B2, C1, C2 and D go directly to needs verification.
       if (in_array($type, array('B2', 'C1', 'C2', 'D'))) {
-        drupal_add_js('$(":radio[name=\'workflow\'][value=\'7\']").attr(\'checked\', \'checked\');', 'inline', 'footer'); 
+        //drupal_add_js('$(":radio[name=\'workflow\'][value=\'7\']").attr(\'checked\', \'checked\');', 'inline', 'footer'); 
+        //previous js solution is not working and I'm thinking it's easier just to set the form value with no js - srk 2-29-16
+        $form['CRLT Certificate Workflow']['#value'] = '7';
       }
 
     }
@@ -399,22 +406,36 @@ function crlt_certificate_form_after_build($form, &$form_state) {
   }
   // Existing nodes...
   else if (!$new_node) {
+  
+	//hide all fields except comments. From issue #6 https://github.com/knieper/crltmich/issues/6
+	
+	$form['field_certificate_term']['#prefix'] = '<div style="display: none;">';
+    $form['field_certificate_term']['#suffix'] = '</div>';  
+    
+    $form['field_certificate_sponsor_unit']['#prefix'] = '<div style="display: none;">';
+    $form['field_certificate_sponsor_unit']['#suffix'] = '</div>';  
 
     // Normal Users may not edit the certificate node unless it is in the
     // "9 - Needs Work (revision requested)" workflow state.
+    
     if ($sid != 9 && !$admin) {
       drupal_set_message('Sorry, you cannot edit this certificate since it has already been submitted. Please e-mail UMGraduateTeacherCertficate@umich.edu if the problem persists.', 'error');
       drupal_goto("node/$nid");
     }
-    else if ($sid == 9 && !$admin) {
+    if ($sid == 9 && !$admin) {
       // User is editing a certificate, move the hidden workflow radio button to the next state.
       // Any form with a verifier, gets moved back to 7 (Needs Verification), all others get moved
       // back to 6 (New Request).
       $sid_next = 6;
       //drupal_set_message('Make modifications to this certificate, then click "Save" to submit it for verification.', 'warning');
       if (in_array($type, array('C1', 'C2', 'D'))) { $sid_next = 7; }
-      drupal_add_js('$(":radio[name=\'workflow\'][value=\'' . $sid_next . '\']").attr(\'checked\', \'checked\');', 'inline', 'footer');
+       // drupal_add_js('$(":radio[name=\'workflow\'][value=\'' . $sid_next . '\']").attr(\'checked\', \'checked\');', 'inline', 'footer');
+       //previous js solution is not working and I'm thinking it's easier just to set the form value with no js - srk 2-29-16
+        $form['CRLT Certificate Workflow']['#prefix'] = '<div style="display: none;">';
+        $form['CRLT Certificate Workflow']['#suffix'] = '</div>'; 
+        $form['CRLT Certificate Workflow']['#value'] = $sid_next;
     }
+    
 
   }
 
