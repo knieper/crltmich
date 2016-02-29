@@ -203,7 +203,8 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
 
     // FYI, This form only shows up on existing nodes, not when creating a new certificate node.
 
-    //drupal_set_message('<pre>' . print_r($form['node']['#value'], true) . '</pre>');
+   // drupal_set_message('<pre>' . print_r($form['#parameters']['2']) . '</pre>');
+    //drupal_set_message('<pre>' . print_r($form['#parameters']['2']->field_certificate_mail[0]['value']) . '</pre>');
     
     if ($form['node']->type != 'certificate') { return; }
 
@@ -394,8 +395,8 @@ function crlt_certificate_form_after_build($form, &$form_state) {
     else {
       // We have a certificate type...
 
-      // Form B2, C1, C2 and D go directly to needs verification.
-      if (in_array($type, array('B2', 'C1', 'C2', 'D'))) {
+      // Form C1, C2 and D go directly to needs verification.
+      if (in_array($type, array('C1', 'C2', 'D'))) {
         //drupal_add_js('$(":radio[name=\'workflow\'][value=\'7\']").attr(\'checked\', \'checked\');', 'inline', 'footer'); 
         //previous js solution is not working and I'm thinking it's easier just to set the form value with no js - srk 2-29-16
         $form['CRLT Certificate Workflow']['#value'] = '7';
