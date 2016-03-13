@@ -379,7 +379,9 @@ function crlt_signup_spreadsheet_download($nid) {
   $node = node_load($nid);
   //drupal_set_message('<pre>' . print_r($node->webform, true) . '</pre>');
   //$filename = strtolower(str_replace(' ', '-', $node->title)) . '.xls';
-  $filename = strtolower(str_replace(' ', '-', $node->title)) . '.csv';
+  // before creating the file name remove commas that may cause the download to fail in chrome
+  $title = str_replace(',','',$node->title);
+  $filename = strtolower(str_replace(' ', '-', $title)) . '.csv';
   // The 'BM_signup_status_user_vbo_admin' view has the majority
   // of the data we need, so let's grab those results first.
   $view_name = 'BM_signup_status_user_vbo_admin';
@@ -478,6 +480,7 @@ function crlt_signup_spreadsheet_download($nid) {
   drupal_set_header('Content-Type: text/csv; utf-8');
   drupal_set_header("Content-Disposition: attachment; filename = $filename");
   print $output;
+
 }
 
 /**
