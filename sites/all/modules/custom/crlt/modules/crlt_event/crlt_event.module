@@ -250,12 +250,7 @@ function crlt_event_signup_synchronization($mode, $signup) {
   if ($certificate_nid) { $new = FALSE; }
   //$messages[] = array('New Node: ' . $new);
   
-  dpm($type);
-  dpm($account->uid);
-  dpm($signup->sid);
-  dpm($certificate_nid);
-  dpm($new);
-  
+
   // If a certificate does not exist for this signup (aka new certificate), and
   // this signaup is marked as attended, create a new certificate node.
   if ($new && $attended == 1 && $mode != 'cancel') {
