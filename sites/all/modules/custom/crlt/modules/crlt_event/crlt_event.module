@@ -33,14 +33,18 @@ function crlt_event_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     $dual_certificates = crlt_event_eligible_for_dual_certificate($node);
     $signups = db_query(" SELECT sid, uid FROM {signup_log} WHERE nid = %d ", $node->nid);
     while ($signup = db_fetch_object($signups)) {
-      $certificate_nid = crlt_event_signup_get_certificate_nid($type, $signup->uid, $signup->sid);
+      //$certificate_nid = crlt_event_signup_get_certificate_nid($type, $signup->uid, $signup->sid);
+      //code was passing nid but the database stores the event id that the signup is associated with srk 3-12-16
+      $certificate_nid = crlt_event_signup_get_certificate_nid($type, $signup->uid, $node->nid);
       if ($certificate_nid) {
         $certificate = node_load($certificate_nid, null, true);
         $certificate->workflow_comment = "Event #$node->nid was deleted for signup #$signup->sid";
         workflow_transition($certificate, 11);
         $messages[] = array($certificate->workflow_comment . " on user #" . l($signup->uid, "user/$signup->uid") . "'s " . l('certificate', "node/$certificate_nid"));
         if ($dual_certificates) {
-          $certificate_copy_nid = crlt_event_signup_get_certificate_nid('B2', $signup->uid, $signup->sid);
+          //$certificate_copy_nid = crlt_event_signup_get_certificate_nid('B2', $signup->uid, $signup->sid);
+          //code was passing nid but the database stores the event id that the signup is associated with srk 3-12-16
+          $certificate_copy_nid = crlt_event_signup_get_certificate_nid('B2', $signup->uid, $node->nid);
           if ($certificate_copy_nid) {
             $certificate_copy = node_load($certificate_copy_nid, null, true);
             if ($certificate_copy) {
@@ -239,9 +243,18 @@ function crlt_event_signup_synchronization($mode, $signup) {
   // certificate node. We'll assume we're creating a new one, unless we prove
   // otherwise.
   $new = TRUE;
-  $certificate_nid = crlt_event_signup_get_certificate_nid($type, $account->uid, $signup->sid);
+  //$certificate_nid = crlt_event_signup_get_certificate_nid($type, $account->uid, $signup->sid);
+  //code was passing nid but the database stores the event id that the signup is associated with srk 3-12-16
+  $certificate_nid = crlt_event_signup_get_certificate_nid($type, $account->uid, $event->nid);
+  
   if ($certificate_nid) { $new = FALSE; }
   //$messages[] = array('New Node: ' . $new);
+  
+  dpm($type);
+  dpm($account->uid);
+  dpm($signup->sid);
+  dpm($certificate_nid);
+  dpm($new);
   
   // If a certificate does not exist for this signup (aka new certificate), and
   // this signaup is marked as attended, create a new certificate node.
@@ -318,7 +331,9 @@ function crlt_event_signup_synchronization($mode, $signup) {
       workflow_transition($certificate, $sid);
       // If it was a dual certificate, do the same to the other certificate.
       if ($dual_certificates) {
-        $certificate_copy_nid = crlt_event_signup_get_certificate_nid('B2', $account->uid, $signup->sid);
+        //$certificate_copy_nid = crlt_event_signup_get_certificate_nid('B2', $account->uid, $signup->sid);
+        //code was passing nid but the database stores the event id that the signup is associated with srk 3-12-16
+        $certificate_copy_nid = crlt_event_signup_get_certificate_nid('B2', $account->uid, $event->nid);
         if ($certificate_copy_nid) {
           $certificate_copy = node_load($certificate_copy_nid, null, true);
           if ($certificate_copy && $sid != $certificate_copy->_workflow) {
