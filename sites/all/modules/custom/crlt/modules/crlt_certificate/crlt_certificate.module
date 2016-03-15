@@ -200,7 +200,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
 
   }
   else if ($form_id == 'workflow_tab_form') {
-
+  
     // FYI, This form only shows up on existing nodes, not when creating a new certificate node.
 
    // drupal_set_message('<pre>' . print_r($form['#parameters']['2']) . '</pre>');
@@ -407,14 +407,6 @@ function crlt_certificate_form_after_build($form, &$form_state) {
   }
   // Existing nodes...
   else if (!$new_node) {
-  
-	//hide all fields except comments. From issue #6 https://github.com/knieper/crltmich/issues/6
-	
-	$form['field_certificate_term']['#prefix'] = '<div style="display: none;">';
-    $form['field_certificate_term']['#suffix'] = '</div>';  
-    
-    $form['field_certificate_sponsor_unit']['#prefix'] = '<div style="display: none;">';
-    $form['field_certificate_sponsor_unit']['#suffix'] = '</div>';  
 
     // Normal Users may not edit the certificate node unless it is in the
     // "9 - Needs Work (revision requested)" workflow state.
@@ -430,6 +422,7 @@ function crlt_certificate_form_after_build($form, &$form_state) {
       $sid_next = 6;
       //drupal_set_message('Make modifications to this certificate, then click "Save" to submit it for verification.', 'warning');
       if (in_array($type, array('C1', 'C2', 'D'))) { $sid_next = 7; }
+
        // drupal_add_js('$(":radio[name=\'workflow\'][value=\'' . $sid_next . '\']").attr(\'checked\', \'checked\');', 'inline', 'footer');
        //previous js solution is not working and I'm thinking it's easier just to set the form value with no js - srk 2-29-16
         $form['CRLT Certificate Workflow']['#prefix'] = '<div style="display: none;">';
