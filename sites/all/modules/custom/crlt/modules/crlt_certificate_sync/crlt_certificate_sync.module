@@ -31,7 +31,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 
   // Only process consultation nodes that are published and being inserted,
   // updated or deleted.
-  if ($node->type != 'consultation' && $node->status == 1) { return; }
+  if (isset($node->type) && $node->type != 'consultation' && $node->status == 1) { return; }
   if (!in_array($op, array('insert', 'update', 'delete'))) { return; }
   
   global $user;

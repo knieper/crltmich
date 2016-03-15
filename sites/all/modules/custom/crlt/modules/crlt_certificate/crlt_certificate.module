@@ -399,7 +399,7 @@ function crlt_certificate_form_after_build($form, &$form_state) {
       if (in_array($type, array('C1', 'C2', 'D'))) {
         //drupal_add_js('$(":radio[name=\'workflow\'][value=\'7\']").attr(\'checked\', \'checked\');', 'inline', 'footer'); 
         //previous js solution is not working and I'm thinking it's easier just to set the form value with no js - srk 2-29-16
-        $form['CRLT Certificate Workflow']['#value'] = '7';
+        $form['workflow']['CRLT Certificate Workflow']['#value'] = '7';
       }
 
     }
