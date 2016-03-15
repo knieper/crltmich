@@ -200,25 +200,31 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
 
   }
   else if ($form_id == 'workflow_tab_form') {
-  
     // FYI, This form only shows up on existing nodes, not when creating a new certificate node.
 
-   // drupal_set_message('<pre>' . print_r($form['#parameters']['2']) . '</pre>');
+    //drupal_set_message('<pre>' . print_r($form) . '</pre>');
     //drupal_set_message('<pre>' . print_r($form['#parameters']['2']->field_certificate_mail[0]['value']) . '</pre>');
     
-    if ($form['node']->type != 'certificate') { return; }
+    //if ($form['node']->type != 'certificate') { return; }
+    //adjusting code since node array appears to not exist anymore 2-29-16 srk
+    if ($form['#parameters'][2]->type != 'certificate' ){ return;}
 
     // Grab the certificate type and nid.
-    $type = $form['node']['#value']->field_certificate_type[0]['value'];
-    $nid = $form['node']['#value']->nid;
+    //$type = $form['node']['#value']->field_certificate_type[0]['value'];
+    //$nid = $form['node']['#value']->nid;
+    //adjusting code since node array appears to not exist anymore 2-29-16 srk
+    $type = $form['#parameters'][2]->field_certificate_type[0]['value']; 
+    $nid = $form['#parameters'][2]->nid;
 
     // What's the current workflow name and state id?
-    $workflow_name = $form['#wf']->name;
-    $sid = $form['workflow'][$workflow_name]['#default_value'];
+    //$workflow_name = $form['#wf']->name;
+    //$sid = $form['workflow'][$workflow_name]['#default_value'];
+    //adjusting code since node array appears to not exist anymore 2-29-16 srk
+    $sid = $form['#parameters'][2]->_workflow;
 
     // This form is only accessible to admins/staff and internal verifiers.
     $access = FALSE;
-    $mail = $form['node']['#value']->field_certificate_mail[0]['value'];
+    $mail = $form['#parameters'][2]->field_certificate_mail[0]['value'];
     if ($admin) { $access = TRUE; }
     else if (
       $sid == 7 &&
@@ -228,7 +234,9 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
     ) { $access = TRUE; }
     if (!$access) {
       drupal_set_message('Sorry, you are not authorized to access this certificate workflow. If the problem persists, e-mail UMGraduateTeacherCertficate@umich.edu for assistance.', 'error');
-      drupal_goto("node/{$form['node']['#value']->nid}");
+      //added to avoid referring to $form['node'] srk 2-29-16
+      $nodePath = 'node/'.$nid;
+      drupal_goto($nodePath);
     }
 
     // Add workflow instructions to form prefix.
@@ -238,7 +246,9 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
 
     // Render the node at the top of the form. We do this because we're having troubles with form
     // alterations on the workflow form, when it is on the default node view page.
-    $form['#prefix'] .= node_view(node_load($form['node']['#value']->nid), false, TRUE, FALSE);
+    //$form['#prefix'] .= node_view(node_load($form['node']['#value']->nid), false, TRUE, FALSE);
+    //adjusting code since node array appears to not exist anymore 2-29-16 srk
+	$form['#prefix'] .= node_view(node_load($nid), false, TRUE, FALSE);
 
     // Add generic workflow instructions for all to see.
     $form['workflow']['#prefix'] .= '<div class="messages warning">' .
@@ -250,20 +260,25 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
     // change the radio button labels to "I Agree", and/or "I Disagree".
     if (!$admin) {
       if (in_array($type, array('C1', 'C2', 'D'))) {
-        $form['workflow'][$workflow_name]['#options'][8] = 'I Agree';
-        $form['workflow'][$workflow_name]['#options'][11] = 'I Disagree';
+        //$form['workflow'][$workflow_name]['#options'][8] = 'I Agree';
+        //$form['workflow'][$workflow_name]['#options'][11] = 'I Disagree';
+        //form structure appears to have changed so simply putting in the workflow name hard code. Not ideal but nothing here is. srk 2-29-16
+        $form['workflow']['CRLT Certificate Workflow']['#options'][8] = 'I Agree';
+        $form['workflow']['CRLT Certificate Workflow']['#options'][11] = 'I Disagree';
         // Hide unneeded states.
-        $remove = array(6, 10, 12); 
-        foreach ($remove as $sid) {
-          unset($form['workflow'][$workflow_name]['#options'][$sid]);
-        }
+        //$remove = array(6, 10, 12); 
+        //6,10, and 12 do not exist anymore. Only 8 and 11 are exposed via workflow permissions. Will hide 7 though.
+       // foreach ($remove as $sid) {
+          unset($form['workflow']['CRLT Certificate Workflow']['#options'][7]);
+       // }
       }
     }
 
     // Hide the workflow scheduler elements.
-    $form['workflow']['workflow_scheduled']['#access'] = FALSE;
-    $form['workflow']['workflow_scheduled_date']['#access'] = FALSE;
-    $form['workflow']['workflow_scheduled_hour']['#access'] = FALSE;
+    //as of 2-29-16 do not see these elements, so commenting out. srk 
+   // $form['workflow']['workflow_scheduled']['#access'] = FALSE;
+   // $form['workflow']['workflow_scheduled_date']['#access'] = FALSE;
+   // $form['workflow']['workflow_scheduled_hour']['#access'] = FALSE;
 
   }
 }
