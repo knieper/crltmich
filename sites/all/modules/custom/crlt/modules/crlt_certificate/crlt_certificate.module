@@ -1,6 +1,10 @@
 <?php
 
 /**
+* This module requires appropriate setting of workflow permissions - if workflows are not being set correctly on transitions check workflow permissions at crlt.umich.edu/admin/build/workflow/edit/2.  
+*/
+
+/**
  * Implements hook_init().
  */
 /*function crlt_certificate_init() {
@@ -200,31 +204,25 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
 
   }
   else if ($form_id == 'workflow_tab_form') {
+  //dpm($form);
     // FYI, This form only shows up on existing nodes, not when creating a new certificate node.
 
-    //drupal_set_message('<pre>' . print_r($form) . '</pre>');
+   // drupal_set_message('<pre>' . print_r($form['#parameters']['2']) . '</pre>');
     //drupal_set_message('<pre>' . print_r($form['#parameters']['2']->field_certificate_mail[0]['value']) . '</pre>');
     
-    //if ($form['node']->type != 'certificate') { return; }
-    //adjusting code since node array appears to not exist anymore 2-29-16 srk
-    if ($form['#parameters'][2]->type != 'certificate' ){ return;}
+    if ($form['node']['#value']->type != 'certificate') { return; }
 
     // Grab the certificate type and nid.
-    //$type = $form['node']['#value']->field_certificate_type[0]['value'];
-    //$nid = $form['node']['#value']->nid;
-    //adjusting code since node array appears to not exist anymore 2-29-16 srk
-    $type = $form['#parameters'][2]->field_certificate_type[0]['value']; 
-    $nid = $form['#parameters'][2]->nid;
+    $type = $form['node']['#value']->field_certificate_type[0]['value'];
+    $nid = $form['node']['#value']->nid;
 
     // What's the current workflow name and state id?
-    //$workflow_name = $form['#wf']->name;
-    //$sid = $form['workflow'][$workflow_name]['#default_value'];
-    //adjusting code since node array appears to not exist anymore 2-29-16 srk
-    $sid = $form['#parameters'][2]->_workflow;
-
+    $workflow_name = $form['#wf']->name;
+    $sid = $form['workflow'][$workflow_name]['#default_value'];
+    
     // This form is only accessible to admins/staff and internal verifiers.
     $access = FALSE;
-    $mail = $form['#parameters'][2]->field_certificate_mail[0]['value'];
+    $mail = $form['node']['#value']->field_certificate_mail[0]['value'];
     if ($admin) { $access = TRUE; }
     else if (
       $sid == 7 &&
@@ -234,9 +232,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
     ) { $access = TRUE; }
     if (!$access) {
       drupal_set_message('Sorry, you are not authorized to access this certificate workflow. If the problem persists, e-mail UMGraduateTeacherCertficate@umich.edu for assistance.', 'error');
-      //added to avoid referring to $form['node'] srk 2-29-16
-      $nodePath = 'node/'.$nid;
-      drupal_goto($nodePath);
+      drupal_goto("node/{$form['node']['#value']->nid}");
     }
 
     // Add workflow instructions to form prefix.
@@ -246,9 +242,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
 
     // Render the node at the top of the form. We do this because we're having troubles with form
     // alterations on the workflow form, when it is on the default node view page.
-    //$form['#prefix'] .= node_view(node_load($form['node']['#value']->nid), false, TRUE, FALSE);
-    //adjusting code since node array appears to not exist anymore 2-29-16 srk
-	$form['#prefix'] .= node_view(node_load($nid), false, TRUE, FALSE);
+    $form['#prefix'] .= node_view(node_load($form['node']['#value']->nid), false, TRUE, FALSE);
 
     // Add generic workflow instructions for all to see.
     $form['workflow']['#prefix'] .= '<div class="messages warning">' .
@@ -260,25 +254,20 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
     // change the radio button labels to "I Agree", and/or "I Disagree".
     if (!$admin) {
       if (in_array($type, array('C1', 'C2', 'D'))) {
-        //$form['workflow'][$workflow_name]['#options'][8] = 'I Agree';
-        //$form['workflow'][$workflow_name]['#options'][11] = 'I Disagree';
-        //form structure appears to have changed so simply putting in the workflow name hard code. Not ideal but nothing here is. srk 2-29-16
-        $form['workflow']['CRLT Certificate Workflow']['#options'][8] = 'I Agree';
-        $form['workflow']['CRLT Certificate Workflow']['#options'][11] = 'I Disagree';
+        $form['workflow'][$workflow_name]['#options'][8] = 'I Agree';
+        $form['workflow'][$workflow_name]['#options'][11] = 'I Disagree';
         // Hide unneeded states.
-        //$remove = array(6, 10, 12); 
-        //6,10, and 12 do not exist anymore. Only 8 and 11 are exposed via workflow permissions. Will hide 7 though.
-       // foreach ($remove as $sid) {
-          unset($form['workflow']['CRLT Certificate Workflow']['#options'][7]);
-       // }
+        $remove = array(6, 7, 10, 12); 
+        foreach ($remove as $sid) {
+          unset($form['workflow'][$workflow_name]['#options'][$sid]);
+        }
       }
     }
 
     // Hide the workflow scheduler elements.
-    //as of 2-29-16 do not see these elements, so commenting out. srk 
-   // $form['workflow']['workflow_scheduled']['#access'] = FALSE;
-   // $form['workflow']['workflow_scheduled_date']['#access'] = FALSE;
-   // $form['workflow']['workflow_scheduled_hour']['#access'] = FALSE;
+    $form['workflow']['workflow_scheduled']['#access'] = FALSE;
+    $form['workflow']['workflow_scheduled_date']['#access'] = FALSE;
+    $form['workflow']['workflow_scheduled_hour']['#access'] = FALSE;
 
   }
 }
@@ -343,18 +332,15 @@ function crlt_certificate_form_after_build($form, &$form_state) {
   $new_node = !$nid ? TRUE : FALSE;
 
   // What's the current workflow name and state id?
-  //$workflow_name = $form['#wf']->name;
-  //$sid = $form['workflow'][$workflow_name]['#default_value'];
-  
-  //storage of workflow was changed at some point so sid was not getting set 2-22-16
-  $sid = $form['#node']->_workflow;
+   $workflow_name = $form['#wf']->name;
+   $sid = $form['workflow'][$workflow_name]['#default_value'];
 
   // Since we are having issues making proper form alterations to the workflow form
   // and we need the workflow form to be present to access some data from it, we're
   // just going to hide the workflow on the form, and everyone will use the workflow
   // tab instead.
-  $form['workflow']['#prefix'] = '<div style="display: none;">';
-  $form['workflow']['#suffix'] = '</div>';
+    $form['workflow']['#prefix'] = '<div style="display: none;">';
+    $form['workflow']['#suffix'] = '</div>';
 
   // Determine the certificate type. Look in the URL first, or use the node's value if the node exists.
   $type = isset($_GET['field_certificate_type']) ? $_GET['field_certificate_type'] : null;
@@ -414,7 +400,9 @@ function crlt_certificate_form_after_build($form, &$form_state) {
       if (in_array($type, array('C1', 'C2', 'D'))) {
         //drupal_add_js('$(":radio[name=\'workflow\'][value=\'7\']").attr(\'checked\', \'checked\');', 'inline', 'footer'); 
         //previous js solution is not working and I'm thinking it's easier just to set the form value with no js - srk 2-29-16
-        $form['workflow']['CRLT Certificate Workflow']['#value'] = '7';
+     // $form['workflow']['CRLT Certificate Workflow']['#value'] = '7';
+      $form_state['values']['workflow'] = 7;
+
       }
 
     }
@@ -425,7 +413,7 @@ function crlt_certificate_form_after_build($form, &$form_state) {
 
     // Normal Users may not edit the certificate node unless it is in the
     // "9 - Needs Work (revision requested)" workflow state.
-    
+
     if ($sid != 9 && !$admin) {
       drupal_set_message('Sorry, you cannot edit this certificate since it has already been submitted. Please e-mail UMGraduateTeacherCertficate@umich.edu if the problem persists.', 'error');
       drupal_goto("node/$nid");
@@ -434,17 +422,14 @@ function crlt_certificate_form_after_build($form, &$form_state) {
       // User is editing a certificate, move the hidden workflow radio button to the next state.
       // Any form with a verifier, gets moved back to 7 (Needs Verification), all others get moved
       // back to 6 (New Request).
-      $sid_next = 6;
+      $sid_next = '6';
       //drupal_set_message('Make modifications to this certificate, then click "Save" to submit it for verification.', 'warning');
-      if (in_array($type, array('C1', 'C2', 'D'))) { $sid_next = 7; }
-
+      if (in_array($type, array('C1', 'C2', 'D'))) { $sid_next = '7'; }
        // drupal_add_js('$(":radio[name=\'workflow\'][value=\'' . $sid_next . '\']").attr(\'checked\', \'checked\');', 'inline', 'footer');
        //previous js solution is not working and I'm thinking it's easier just to set the form value with no js - srk 2-29-16
-        $form['CRLT Certificate Workflow']['#prefix'] = '<div style="display: none;">';
-        $form['CRLT Certificate Workflow']['#suffix'] = '</div>'; 
-        $form['CRLT Certificate Workflow']['#value'] = $sid_next;
+     // $form['workflow']['CRLT Certificate Workflow']['#value'] = $sid_next;
+     $form_state['values']['workflow'] = $sid_next;
     }
-    
 
   }
 
@@ -748,8 +733,8 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
           $internal = TRUE;
 
           // Set to true to only send notifications to developer. 
-          $demo = FALSE;
-          $demo_recipient = "tyler.frankenstein@gmail.com";
+          $demo = TRUE;
+          $demo_recipient = "sharonknieper@gmail.com";
 
           if ($workflow == "CRLT Certificate Workflow" || $wid == 2) {
 
