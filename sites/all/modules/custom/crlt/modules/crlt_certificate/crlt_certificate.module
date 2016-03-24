@@ -257,7 +257,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
         $form['workflow'][$workflow_name]['#options'][8] = 'I Agree';
         $form['workflow'][$workflow_name]['#options'][11] = 'I Disagree';
         // Hide unneeded states.
-        $remove = array(6, 7, 10, 12); 
+        $remove = array(6, 7, 9, 10, 12); 
         foreach ($remove as $sid) {
           unset($form['workflow'][$workflow_name]['#options'][$sid]);
         }
