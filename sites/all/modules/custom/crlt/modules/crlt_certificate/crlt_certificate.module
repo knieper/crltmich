@@ -103,7 +103,7 @@ function crlt_certificate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     // OK to view...
     return;
   }
-  drupal_set_message("Sorry, you are not authorized to view certificate $node->nid. If the problem persists, please e-mail UMGraduateTeacherCertficate@umich.edu for more information.", 'error');
+  drupal_set_message("Sorry, you are not authorized to view certificate $node->nid. If the problem persists, please e-mail UMGraduateTeacherCertificate@umich.edu for more information.", 'error');
   drupal_goto('');
 }
 
@@ -231,7 +231,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
       $user->name == db_result(db_query("SELECT name FROM {users} WHERE mail = '%s'", $mail))
     ) { $access = TRUE; }
     if (!$access) {
-      drupal_set_message('Sorry, you are not authorized to access this certificate workflow. If the problem persists, e-mail UMGraduateTeacherCertficate@umich.edu for assistance.', 'error');
+      drupal_set_message('Sorry, you are not authorized to access this certificate workflow. If the problem persists, e-mail UMGraduateTeacherCertificate@umich.edu for assistance.', 'error');
       drupal_goto("node/{$form['node']['#value']->nid}");
     }
 
@@ -415,7 +415,7 @@ function crlt_certificate_form_after_build($form, &$form_state) {
     // "9 - Needs Work (revision requested)" workflow state.
 
     if ($sid != 9 && !$admin) {
-      drupal_set_message('Sorry, you cannot edit this certificate since it has already been submitted. Please e-mail UMGraduateTeacherCertficate@umich.edu if the problem persists.', 'error');
+      drupal_set_message('Sorry, you cannot edit this certificate since it has already been submitted. Please e-mail UMGraduateTeacherCertificate@umich.edu if the problem persists.', 'error');
       drupal_goto("node/$nid");
     }
     if ($sid == 9 && !$admin) {
@@ -851,7 +851,7 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
                 $recipient,
                 language_default(),
                 array('subject' => $subject, 'body' => $body),
-                'UMGraduateTeacherCertficate@umich.edu'
+                'UMGraduateTeacherCertificate@umich.edu'
               );
               drupal_set_message($msg);
 
@@ -867,7 +867,7 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
                   $account->mail,
                   language_default(),
                   array('subject' => variable_get('crlt_certificate_needs_verification_user_subject', ''), 'body' => $body),
-                  'UMGraduateTeacherCertficate@umich.edu'
+                  'UMGraduateTeacherCertificate@umich.edu'
                 );
               }
 
