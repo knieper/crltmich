@@ -285,6 +285,7 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
     $mail_params = array(
       'from'=>'crltgrants@umich.edu',
       'to'=>array( $applicant->mail ),
+      'cc' => 'sharonknieper@hotmail.com',
       'subject'=>variable_get( $key . "_subject", 'No report reminder subject found' ),
       'body'=>variable_get( $key, 'No report reminder email found' ),
     );
