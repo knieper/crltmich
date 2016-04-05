@@ -297,8 +297,8 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
     	//send a cc email to crltgrants
     	$ccmail_params = $mail_params;
     	$ccmail_params['subject'] = 'A grant application report reminder was emailed to '.implode( ',', $mail_params['to']);
-    	$ccmail_params['body'] = 'Below is a copy of the original email. '.$ccmail_params['body'];
-    	 drupal_mail( 'crlt_grant_application', 'crlt_grant_application_report_reminder', 'sharonknieper@hotmail.com', language_default(), $ccmail_params, $ccmail_params['from'], TRUE ); 
+    	$ccmail_params['body'] = 'This is a copy of the original email. '.$ccmail_params['body'];
+    	 drupal_mail( 'crlt_grant_application', 'crlt_grant_application_report_reminder', 'crltgrants@umich.edu', language_default(), $ccmail_params, $ccmail_params['from'], TRUE ); 
       // Log successful email send
       watchdog( 'crlt_grant_app', 'Email: Grant Report reminder @report_reminder sent to @to for nid @nid', array( '@report_reminder'=>$report_reminder, '@to'=>implode( ' &amp; ', $mail_params['to'] ), '@nid'=>$grant_application->nid ) );
       if ( FALSE===$cron ) {
