@@ -285,7 +285,6 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
     $mail_params = array(
       'from'=>'crltgrants@umich.edu',
       'to'=>array( $applicant->mail ),
-      'headers' => array('cc' => 'sharonknieper@hotmail.com'),
       'subject'=>variable_get( $key . "_subject", 'No report reminder subject found' ),
       'body'=>variable_get( $key, 'No report reminder email found' ),
     );
@@ -295,6 +294,8 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
     $mail_params['body'] = nl2br( $mail_params['body'] );
     // Try to send the email
     if ( drupal_mail( 'crlt_grant_application', 'crlt_grant_application_report_reminder', implode( ',', $mail_params['to'] ), language_default(), $mail_params, $mail_params['from'], TRUE ) ) {
+    	//send a cc email to crltgrants
+    	 drupal_mail( 'crlt_grant_application', 'crlt_grant_application_report_reminder', 'sharonknieper@hotmail.com', language_default(), $mail_params, $mail_params['from'], TRUE ); 
       // Log successful email send
       watchdog( 'crlt_grant_app', 'Email: Grant Report reminder @report_reminder sent to @to for nid @nid', array( '@report_reminder'=>$report_reminder, '@to'=>implode( ' &amp; ', $mail_params['to'] ), '@nid'=>$grant_application->nid ) );
       if ( FALSE===$cron ) {
