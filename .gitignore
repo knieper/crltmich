@@ -30,5 +30,8 @@ sites/all/modules/devel
 #ignore devel module
 sites/all/modules/devel
 sites/all/modules/devel/*
->>>>>>> 4a92cc29224555f8f6dd3d21f808ec53d215387d:.gitignore
+
+#ignore engaged-learning directory
+engaged-learning
+engaged-learning/*
 

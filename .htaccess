@@ -214,12 +214,6 @@ RewriteRule ^assessment\/largestudies$ http://www.crlt.umich.edu/assessment/coll
   RewriteCond %{QUERY_STRING} !(\d+)$
   RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/ [L,R,NC]
 
-  RewriteCond %{REQUEST_URI} !=/index.php
-  RewriteCond %{REQUEST_URI} !^/theatre
-  RewriteCond %{REQUEST_URI} !^/CRLT50
-  RewriteCond %{REQUEST_URI} !^/update.php
-  RewriteRule ^(.*)\.php$ http://www.crlt.umich.edu/$1/ [L,R=301]
-
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
