@@ -125,9 +125,7 @@ function mailsystem_html_to_text($string, $allowed_tags = NULL) {
   $text = mailsystem_wrap_mail($text, array('max' => 1000 - strlen($eol), 'hard' => TRUE));
   // Change non-breaking spaces back to regular spaces, and trim line breaks.
   // chr(160) is the non-breaking space character.
- // problem with spaces https://www.drupal.org/node/1976716  also altered at previous line 174.
- // $text = str_replace(chr(160), ' ', trim($text, $eol));
-  $text = str_replace(chr(0xC2) . chr(0xA0), " ", trim($text, $eol));
+  $text = str_replace(chr(160), ' ', trim($text, $eol));
   // Add footnotes;
   if ($notes) {
     // Add a blank line before the footnote list.
@@ -173,9 +171,7 @@ function _mailsystem_html_to_text(DOMNode $node, array $allowed_tags, array &$no
     if (in_array('pre', $parents)) {
       // Within <pre> tags, all spaces become non-breaking.
       // chr(160) is the non-breaking space character.
-     // $text = str_replace(' ', chr(160), $text);
-     //problem with spaces, altered per https://www.drupal.org/node/1976716#comment-8249043
-     $text = str_replace(' ', chr(0xC2) . chr(0xA0), $text);
+      $text = str_replace(' ', chr(160), $text);
     }
     else {
       // Outside <pre> tags, collapse whitespace.
