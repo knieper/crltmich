@@ -734,7 +734,7 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
 
           // Set to true to only send notifications to developer. 
           $demo = TRUE;
-          $demo_recipient = "mbakewel@umich.edu";
+          $demo_recipient = "shakniep@umich.edu";
 
           if ($workflow == "CRLT Certificate Workflow" || $wid == 2) {
 
