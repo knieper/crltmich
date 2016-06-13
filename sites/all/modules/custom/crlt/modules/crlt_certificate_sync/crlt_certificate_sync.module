@@ -186,6 +186,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
             $sid = 10; // Approved.
             $workflow_comment = "Consultation #$node->nid Teach Philosophy Approved";  
           }
+          
         }
         // END: duplicate code block
         $certificate->workflow_comment = $workflow_comment;
@@ -197,7 +198,8 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         }
         $current_user = $user;
         $user = $verifier;
-        workflow_transition($certificate, $sid);
+        //because the user is a service provider that normally cannot set certificates to approved set 'force' to TRUE to ignore workflow permissions
+        workflow_execute_transition($certificate, $sid, $workflow_comment, $force=TRUE);
         $user = $current_user;
       }
       else {
