@@ -285,14 +285,14 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
       $applicant = user_load( array( 'uid'=>$grant_application->uid ) );
     }
     /*adding demo email capability to test - June 2016 srk*/
-      $demo = FALSE;
+      $demo = TRUE;
       $demo_recipient = "sharonknieper@gmail.com";
 
       if ($demo) {
-        $recipient = array($demo_recipient);
+        $recipient = $demo_recipient;
         }
       else{
-        $recipient = array($applicant->mail);
+        $recipient = $applicant->mail;
       }
     $mail_params = array(
       'from'=>'crltgrants@umich.edu',
