@@ -115,6 +115,9 @@ DirectoryIndex index.php
   # uncomment the following line:
   # RewriteBase /
 
+RewriteRule ^gsis$ http://crlt.umich.edu/programs-services/graduate-students-post-docs [L,R=301]
+RewriteRule ^gspd$ http://crlt.umich.edu/programs-services/graduate-students-post-docs [L,R=301]
+RewriteRule ^publinks\/racialguidelines$ http://crlt.umich.edu/publinks/respondingtobias [L,R=301]
 RewriteRule ^tstrategies\/tsmdt$ http://crlt.umich.edu/multicultural-teaching [L,R=301]
 RewriteRule ^faculty\/faculty\.php$ http://www.crlt.umich.edu/programs/faculty [L,R=301]
 RewriteRule ^50th\/index.php$ http://www.crlt.umich.edu/50th-celebration [L,R=301]
@@ -187,7 +190,7 @@ RewriteRule ^assessment\/largestudies$ http://www.crlt.umich.edu/assessment/coll
   RewriteRule ^publinks\/(.*)pdf$ http://www.crlt.umich.edu/sites/default/files/resource_files/$1pdf [L,R,NC]
   RewriteCond %{QUERY_STRING} destination=node%25252F(\d+)
   RewriteCond %{REQUEST_URI} !cancel
-  RewriteRule .* https://www.crlt.umich.edu/node/%1? [R,L]
+  #RewriteRule .* https://www.crlt.umich.edu/node/%1? [R,L]
 
   RewriteCond %{QUERY_STRING} destination=node%25252F(\d+)%252523comment-form
   RewriteRule .* https://www.crlt.umich.edu/node/%1#comment-form [R,L]
@@ -213,12 +216,6 @@ RewriteRule ^assessment\/largestudies$ http://www.crlt.umich.edu/assessment/coll
   RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/node/%1/ [L,R,NC]
   RewriteCond %{QUERY_STRING} !(\d+)$
   RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/ [L,R,NC]
-
-  RewriteCond %{REQUEST_URI} !=/index.php
-  RewriteCond %{REQUEST_URI} !^/theatre
-  RewriteCond %{REQUEST_URI} !^/CRLT50
-  RewriteCond %{REQUEST_URI} !^/update.php
-  RewriteRule ^(.*)\.php$ http://www.crlt.umich.edu/$1/ [L,R=301]
 
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
