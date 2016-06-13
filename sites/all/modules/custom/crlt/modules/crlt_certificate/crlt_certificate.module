@@ -1,7 +1,7 @@
 <?php
 
 /**
-* This module requires appropriate setting of workflow permissions - if workflows are not being set correctly on transitions check workflow permissions at crlt.umich.edu/admin/build/workflow/edit/2.  
+* This module requires appropriate setting of workflow permissions - if workflows are not being set correctly on transitions check workflow permissions at crlt.umich.edu/admin/build/workflow/edit/2.
 */
 
 /**
@@ -113,7 +113,7 @@ function crlt_certificate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 /*function crlt_certificate_menu_alter(&$items) {
   // The 'Certificates' tab that shows up on user profiles,
   // should only be visible on the current user's profile,
-  // except for admins/staff, they can always see it. 
+  // except for admins/staff, they can always see it.
   // @TODO - it appears we can't alter paths created by Views...
   drupal_set_message('<pre>' . print_r($items, true) . '</pre>');
   $items['user/%/certificates']['access callback'] = '_crlt_certificate_user_certificates_access_callback';
@@ -156,7 +156,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
 
     // Are we working with a new node, or not?
     $new_node = !$nid ? TRUE : FALSE;
-    
+
     // If we're adding a certificate node, change the page title.
     if ($new_node) { drupal_set_title('Submit documentation'); }
 
@@ -209,7 +209,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
 
    // drupal_set_message('<pre>' . print_r($form['#parameters']['2']) . '</pre>');
     //drupal_set_message('<pre>' . print_r($form['#parameters']['2']->field_certificate_mail[0]['value']) . '</pre>');
-    
+
     if ($form['node']['#value']->type != 'certificate') { return; }
 
     // Grab the certificate type and nid.
@@ -219,7 +219,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
     // What's the current workflow name and state id?
     $workflow_name = $form['#wf']->name;
     $sid = $form['workflow'][$workflow_name]['#default_value'];
-    
+
     // This form is only accessible to admins/staff and internal verifiers.
     $access = FALSE;
     $mail = $form['node']['#value']->field_certificate_mail[0]['value'];
@@ -257,7 +257,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
         $form['workflow'][$workflow_name]['#options'][8] = 'I Agree';
         $form['workflow'][$workflow_name]['#options'][11] = 'I Disagree';
         // Hide unneeded states.
-        $remove = array(6, 7, 9, 10, 12); 
+        $remove = array(6, 7, 9, 10, 12);
         foreach ($remove as $sid) {
           unset($form['workflow'][$workflow_name]['#options'][$sid]);
         }
@@ -398,7 +398,7 @@ function crlt_certificate_form_after_build($form, &$form_state) {
 
       // Form C1, C2 and D go directly to needs verification.
       if (in_array($type, array('C1', 'C2', 'D'))) {
-        //drupal_add_js('$(":radio[name=\'workflow\'][value=\'7\']").attr(\'checked\', \'checked\');', 'inline', 'footer'); 
+        //drupal_add_js('$(":radio[name=\'workflow\'][value=\'7\']").attr(\'checked\', \'checked\');', 'inline', 'footer');
         //previous js solution is not working and I'm thinking it's easier just to set the form value with no js - srk 2-29-16
      // $form['workflow']['CRLT Certificate Workflow']['#value'] = '7';
       $form_state['values']['workflow'] = 7;
@@ -537,7 +537,7 @@ function crlt_certificate_form_after_build($form, &$form_state) {
         }
       }
       // Select lists.
-      else { 
+      else {
         $form[$field]['value']['#required'] = TRUE;
       }
   }
@@ -616,7 +616,7 @@ function crlt_certificate_settings_form(&$form_state) {
  *
  */
 function crlt_certificate_settings_form_submit($form, &$form_state) {
-  // For each certificate type, grab its "help" text and save it to the DB.  
+  // For each certificate type, grab its "help" text and save it to the DB.
   $certificate_types = crlt_field_allowed_values_list_as_array('field_certificate_type');
   $elements = array('body', 'verifier', 'agreement');
   foreach ($certificate_types as $index => $type) {
@@ -732,8 +732,8 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
           $recipient = null;
           $internal = TRUE;
 
-          // Set to true to only send notifications to developer. 
-          $demo = TRUE;
+          // Set to true to only send notifications to developer.
+          $demo = FALSE;
           $demo_recipient = "mbakewell@umich.edu";
 
           if ($workflow == "CRLT Certificate Workflow" || $wid == 2) {
@@ -785,7 +785,7 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
                 if ($type == 'C1' || $type == 'C2') {
                   $recipient = $node->field_certificate_mail[0]['value'];
                 }
-                // Form D notifies the mentor, but the mentor will not be involved in the workflow. 
+                // Form D notifies the mentor, but the mentor will not be involved in the workflow.
                 else if ($type == 'D') {
                   $recipient = $node->field_certificate_mail[0]['value'];
                   $mentor = TRUE;
@@ -833,7 +833,7 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
               }
               // Replace the tokens in the body.
               if ($body) {
-                // Now replace the normal tokens, and convert new lines to html breaks. 
+                // Now replace the normal tokens, and convert new lines to html breaks.
                 $body = token_replace($body, 'node', $node);
                 $body = token_replace($body, 'user', $account);
                 $body = nl2br($body);
@@ -935,7 +935,7 @@ function crlt_certificate_updated_time_batch() {
     FROM {node} n
     INNER JOIN {content_type_certificate} ctc ON n.nid = ctc.nid
     WHERE
-      n.type = 'certificate' AND 
+      n.type = 'certificate' AND
       n.vid = ctc.vid AND
       ctc.field_certificate_source_value IN ('signup', 'sitemaker', 'consultation')
     ORDER BY n.nid ASC ";
@@ -1041,4 +1041,3 @@ function crlt_certificate_get_term_end_date($term) {
   }
   return strtotime($date);
 }
-

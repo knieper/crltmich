@@ -285,7 +285,7 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
       $applicant = user_load( array( 'uid'=>$grant_application->uid ) );
     }
     /*adding demo email capability to test - June 2016 srk*/
-      $demo = TRUE;
+      $demo = FALSE;
       $demo_recipient = "sharonknieper@gmail.com";
 
       if ($demo) {
@@ -307,7 +307,6 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
     $mail_params['body'] = nl2br( $mail_params['body'] );
     // Try to send the email
     if ( drupal_mail( 'crlt_grant_application', 'crlt_grant_application_report_reminder', implode( ',', $mail_params['to'] ), language_default(), $mail_params, $mail_params['from'], TRUE )) {
-  //if ( drupal_mail( 'crlt_grant_application', 'crlt_grant_application_report_reminder', $mail_params['to'], language_default(), $mail_params, $mail_params['from'], TRUE )) {
     	if($demo == FALSE){
       //send a cc email to crltgrants if not in demo mode
     	$ccmail_params = $mail_params;
@@ -317,9 +316,7 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
       }
       // Log successful email send
       watchdog( 'crlt_grant_app', 'Email: Grant Report reminder @report_reminder sent to @to for nid @nid', array( '@report_reminder'=>$report_reminder, '@to'=>implode( ',', $mail_params['to'] ), '@nid'=>$grant_application->nid ) );
-    //  watchdog( 'crlt_grant_app', 'Email: Grant Report reminder @report_reminder sent to @to for nid @nid', array( '@report_reminder'=>$report_reminder, '@to'=>$mail_params['to'], '@nid'=>$grant_application->nid ) );
       if ( FALSE===$cron ) {
-        //drupal_set_message( t( 'Grant Report reminder @report_reminder email has been sent to @to for nid @nid', array( '@report_reminder'=>$report_reminder, '@to'=>$mail_params['to'], '@nid'=>$grant_application->nid,) ) );
         drupal_set_message( t( 'Grant Report reminder @report_reminder email has been sent to @to for nid @nid', array( '@report_reminder'=>$report_reminder, '@to'=>implode( ',', $mail_params['to'] ), '@nid'=>$grant_application->nid,) ) );
       }
       // Increment and save the number of reminders sent
