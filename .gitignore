@@ -26,5 +26,5 @@ sites/all/themes/README.txt
 sites/all/modules/devel
 sites/all/modules/devel/*
 
-#ignore engaged learning
-engaged-learning/
+#ignore engaged-learning directory
+engaged-learning
