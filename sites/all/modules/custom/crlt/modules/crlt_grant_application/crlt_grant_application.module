@@ -108,7 +108,6 @@ if('grant_application' == $node->type){
     $enddate = $node->field_grant_application_dates[0]['value2'];
     if(empty($node->field_grant_application_report[0]['value'])){
       $node->field_grant_application_report[0]['value'] = date( 'Y-m-d\TH:i:s', strtotime( $enddate . " + 3 months" ) );
-      drupal_set_message('this is called');
     }
   }
  }
