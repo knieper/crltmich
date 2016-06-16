@@ -102,6 +102,18 @@ function crlt_grant_application_nodeapi( &$node, $op, $a3 = NULL, $a4 = NULL ) {
 // drupal_set_message('<pre>' . print_r($node, true) . '</pre>');
 //
 // }
+
+if('grant_application' == $node->type){
+  if($op == 'insert' || 'update'){
+    $enddate = $node->field_grant_application_dates[0]['value2'];
+    if(empty($node->field_grant_application_report[0]['value'])){
+      $node->field_grant_application_report[0]['value'] = date( 'Y-m-d\TH:i:s', strtotime( $enddate . " + 3 months" ) );
+      drupal_set_message('this is called');
+    }
+  }
+ }
+
+/* old email code that wasn't being used, so archiving it as of June 2016 -SRK
   // Skip all other content types.
   if (FALSE && 'grant_application' == $node->type && 'insert' == $op ) {
     // Skip SiteMaker content migration nodes
@@ -163,6 +175,8 @@ function crlt_grant_application_nodeapi( &$node, $op, $a3 = NULL, $a4 = NULL ) {
       // }
     }
   }
+  end of old non-used email code - June 2016 srk*/
+
 }
 /**
  * Implements hook_mail($key, &$message, $params)
