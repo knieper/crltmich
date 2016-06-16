@@ -37,6 +37,14 @@ function crlt_grant_application_menu() {
     'file' => 'crlt_grant_report_mail_settings.form.inc'
   );
 
+  $items['admin/crlt/grant-applications/demo-mail-settings'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'CRLT Grant Application Demo Mail Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array( 'crlt_grant_application_demo_mail_settings' ),
+    'access arguments' => array( 'administer users' ),
+  );
+
   return $items;
 }
 
@@ -298,8 +306,8 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
       $applicant = user_load( array( 'uid'=>$grant_application->uid ) );
     }
     /*adding demo email capability to test - June 2016 srk*/
-      $demo = TRUE;
-      $demo_recipient = "sharonknieper@gmail.com";
+      $demo = variable_get( 'crlt_grant_application_demo_mail_setting', 'FALSE' );
+      $demo_recipient = variable_get('crlt_grant_application_demo_mail_address', $site_email);
 
       if ($demo) {
         $recipient = $demo_recipient;
@@ -443,4 +451,28 @@ function crlt_grant_application_report_form_access( $nid ) {
     drupal_set_message( 'Invalid grant application node: ' . $nid, 'error' );
   }
   return $authorized;
+}
+
+function crlt_grant_application_demo_mail_settings( &$form_state){
+  $form = array();
+  $form['demo_mail_setting'] = array(
+    '#type' => 'radios',
+    '#title' => t('Enable sending grant report reminders to a test email'),
+    '#default_value' => variable_get( 'crlt_grant_application_demo_mail_setting', 'FALSE' ),
+    '#options' => array('TRUE', 'FALSE'),
+  );
+  $site_email = variable_get('site_mail', '');
+  $form['demo_mail_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Address to send demo email reminders to'),
+    '#default_value' => variable_get('crlt_grant_application_demo_mail_address', $site_email),
+  );
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  return $form;
+}
+
+function crlt_grant_application_demo_mail_settings_submit( $form, &$form_state ) {
+  variable_set('crlt_grant_application_demo_mail_setting', $form_state['values']['demo_mail_setting']);
+  variable_set('crlt_grant_application_demo_mail_address', $form_state['values']['demo_mail_address']);
+  drupal_set_message( 'Demo Mail settings saved!' );
 }
