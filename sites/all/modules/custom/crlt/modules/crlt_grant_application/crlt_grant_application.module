@@ -307,10 +307,10 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
     }
     /*adding demo email capability to test - June 2016 srk*/
       $demo = variable_get( 'crlt_grant_application_demo_mail_setting', 'FALSE' );
-      $demo_recipient = variable_get('crlt_grant_application_demo_mail_address', $site_email);
+      $demo_recipient = variable_get('crlt_grant_application_demo_mail_address', variable_get('site_mail', ''));
 
       if ($demo) {
-        $recipient = $demo_recipient;
+        $recipient = array($demo_recipient);
         }
       else{
         $recipient = $applicant->mail;
@@ -458,14 +458,14 @@ function crlt_grant_application_demo_mail_settings( &$form_state){
   $form['demo_mail_setting'] = array(
     '#type' => 'radios',
     '#title' => t('Enable sending grant report reminders to a test email'),
+    '#description' => t('TRUE = emails will only go to demo email'),
     '#default_value' => variable_get( 'crlt_grant_application_demo_mail_setting', 'FALSE' ),
     '#options' => array('TRUE', 'FALSE'),
   );
-  $site_email = variable_get('site_mail', '');
   $form['demo_mail_address'] = array(
     '#type' => 'textfield',
     '#title' => t('Address to send demo email reminders to'),
-    '#default_value' => variable_get('crlt_grant_application_demo_mail_address', $site_email),
+    '#default_value' => variable_get('crlt_grant_application_demo_mail_address', variable_get('site_mail', '')),
   );
   $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
   return $form;

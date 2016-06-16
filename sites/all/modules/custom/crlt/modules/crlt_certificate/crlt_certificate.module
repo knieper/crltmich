@@ -52,6 +52,15 @@ function crlt_certificate_menu() {
     'page callback' => 'crlt_certificate_updated_time_batch',
     'access arguments' => array('administer users')
   );
+
+  $items['admin/crlt/certificate/demo-mail-settings'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'CRLT Certificate Demo Mail Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array( 'crlt_certificate_demo_mail_settings' ),
+    'access arguments' => array( 'administer users' ),
+  );
+
   return $items;
 }
 
@@ -733,8 +742,8 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
           $internal = TRUE;
 
           // Set to true to only send notifications to developer.
-          $demo = TRUE;
-          $demo_recipient = "mbakewell@umich.edu";
+          $demo = variable_get( 'crlt_certificate_demo_mail_setting', 'FALSE' );
+          $demo_recipient = variable_get('crlt_certificate_demo_mail_address', variable_get('site_mail', ''));
 
           if ($workflow == "CRLT Certificate Workflow" || $wid == 2) {
 
@@ -1040,4 +1049,28 @@ function crlt_certificate_get_term_end_date($term) {
     case 'Fall': $date .= "-12-31";  break;
   }
   return strtotime($date);
+}
+
+function crlt_certificate_demo_mail_settings( &$form_state){
+  $form = array();
+  $form['demo_mail_setting'] = array(
+    '#type' => 'radios',
+    '#title' => t('Enable sending certificate reminders to a test email address'),
+    '#description' => t('TRUE = emails will only go to demo email'),
+    '#default_value' => variable_get( 'crlt_certificate_demo_mail_setting', 'FALSE' ),
+    '#options' => array('TRUE', 'FALSE'),
+  );
+  $form['demo_mail_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Address to send demo email reminders to'),
+    '#default_value' => variable_get('crlt_certificate_demo_mail_address', variable_get('site_mail', '')),
+  );
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  return $form;
+}
+
+function crlt_certificate_demo_mail_settings_submit( $form, &$form_state ) {
+  variable_set('crlt_certificate_demo_mail_setting', $form_state['values']['demo_mail_setting']);
+  variable_set('crlt_certificate_demo_mail_address', $form_state['values']['demo_mail_address']);
+  drupal_set_message( 'Demo Mail settings saved!' );
 }
