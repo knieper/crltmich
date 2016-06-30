@@ -842,9 +842,9 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
                 if (strpos($body, '[node:content]') !== FALSE) {
                   $body = str_replace('[node:content]', node_view($node, TRUE, FALSE, FALSE), $body);
                 }
-                if (strpos($body, '[node:body]') !== FALSE) {
+                /*if (strpos($body, '[node:body]') !== FALSE) {
                   $body = str_replace('[node:body]', $node->body, $body);
-                }
+                }*/
 
               // Send out the e-mail.
               drupal_mail(
