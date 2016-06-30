@@ -840,7 +840,8 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
                 // Since there doesn't appear to be a token to render a node content,
                 // we'll manually replace the fake [node:content].
                 if (strpos($body, '[node:content]') !== FALSE) {
-                  $body = str_replace('[node:content]', node_view($node, TRUE, FALSE, FALSE), $body);
+                  //$body = str_replace('[node:content]', node_view($node, TRUE, FALSE, FALSE), $body);
+                  $body = str_replace('[node:content]', $node->body);
                 }
               }
 
