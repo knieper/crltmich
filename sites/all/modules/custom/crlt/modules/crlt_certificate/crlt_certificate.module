@@ -841,7 +841,7 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
                 // we'll manually replace the fake [node:content].
                 if (strpos($body, '[node:content]') !== FALSE) {
                   //$body = str_replace('[node:content]', node_view($node, TRUE, FALSE, FALSE), $body);
-                  $body = str_replace('[node:content]', $node->body);
+                  $body = str_replace('[node:content]', $node->body, $body);
                 }
               }
 
