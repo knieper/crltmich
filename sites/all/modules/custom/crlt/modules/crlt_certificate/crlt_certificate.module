@@ -84,36 +84,56 @@ function crlt_my_gtc_portfolio() {
  */
 function crlt_certificate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   if ($node->type != 'certificate') { return; }
-  if ($op != 'view') { return; }
   global $user;
-  // Only authenticated users who are admins, staff, a certificate's author, or a certificate's verifier,
-  // may view non GTC+ certificate nodes.
-  // @TODO - why isn't this in an access_callback function via hook_menu_alter()?
-  if (in_array('CRLT Staff', $user->roles) || in_array('admin', $user->roles)) {
-    return;
+  if($op = 'presave'){
+    $account = user_load($user->uid);
+    if(!empty($node->field_for_profile_first_name[0][value])) {
+      $edit['profile_first_name'] = $node->field_for_profile_first_name[0][value];
+    }
+    else
+      {
+        $edit['profile_first_name'] = $account->profile_first_name;
+      }
+    if(!empty($node->field_for_profile_last_name[0][value])) {
+        $edit['profile_last_name'] = $node->field_for_profile_last_name[0][value];
+    }
+    else
+      {
+        $edit['profile_last_name'] = $account->profile_last_name;
+      }
+    $category = 'Personal Information';
+    profile_save_profile(&$edit, &$user, $category, $register = FALSE);
   }
-  $type = $node->field_certificate_type[0]['value'];
-  if (
-    $user->uid != 0 &&
-    !in_array($type, array('A', 'B1', 'B1_mc', 'B1_it', 'B2', 'C1', 'C2', 'D', 'E'))
-  ) {
-    // OK to view...
-    return;
-  }
-  else if  (
-    $user->uid == $node->uid ||
-    (
-      in_array($type, array('C1', 'C2', 'D')) &&
-      isset($node->field_certificate_mail[0]['value']) &&
-      $node->field_certificate_mail[0]['value'] != '' &&
-      $node->field_certificate_mail[0]['value'] == $user->mail
-    )
-  ) {
-    // OK to view...
-    return;
-  }
+  if ($op = 'view') {
+    // Only authenticated users who are admins, staff, a certificate's author, or a certificate's verifier,
+    // may view non GTC+ certificate nodes.
+    // @TODO - why isn't this in an access_callback function via hook_menu_alter()?
+    if (in_array('CRLT Staff', $user->roles) || in_array('admin', $user->roles)) {
+      return;
+    }
+    $type = $node->field_certificate_type[0]['value'];
+    if (
+      $user->uid != 0 &&
+      !in_array($type, array('A', 'B1', 'B1_mc', 'B1_it', 'B2', 'C1', 'C2', 'D', 'E'))
+    ) {
+      // OK to view...
+      return;
+    }
+    else if  (
+      $user->uid == $node->uid ||
+      (
+        in_array($type, array('C1', 'C2', 'D')) &&
+        isset($node->field_certificate_mail[0]['value']) &&
+        $node->field_certificate_mail[0]['value'] != '' &&
+        $node->field_certificate_mail[0]['value'] == $user->mail
+        )
+    ) {
+      // OK to view...
+      return;
+    }
   drupal_set_message("Sorry, you are not authorized to view certificate $node->nid. If the problem persists, please e-mail UMGraduateTeacherCertificate@umich.edu for more information.", 'error');
   drupal_goto('');
+  }
 }
 
 /**
