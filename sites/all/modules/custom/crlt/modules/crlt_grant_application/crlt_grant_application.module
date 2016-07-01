@@ -112,13 +112,22 @@ function crlt_grant_application_nodeapi( &$node, $op, $a3 = NULL, $a4 = NULL ) {
 // }
 
 if('grant_application' == $node->type){
-  if($op == 'insert' || 'update'){
-    $enddate = $node->field_grant_application_dates[0]['value2'];
+  if($op == 'presave'){
+    //if the report due field is for some reason not filled in set it off of the project end date
     if(empty($node->field_grant_application_report[0]['value'])){
+      $enddate = $node->field_grant_application_dates[0]['value2'];
       $node->field_grant_application_report[0]['value'] = date( 'Y-m-d\TH:i:s', strtotime( $enddate . " + 3 months" ) );
+      $node->field_grant_application_report[0]['value2'] = $node->field_grant_application_report[0]['value'];
     }
   }
- }
+  //when creating new reports set report due date off of the project end date regardless of if it was set or not.
+  if($op == 'insert'){
+    $enddate = $node->field_grant_application_dates[0]['value2'];
+    $node->field_grant_application_report[0]['value'] = date( 'Y-m-d\TH:i:s', strtotime( $enddate . " + 3 months" ) );
+    $node->field_grant_application_report[0]['value2'] = $node->field_grant_application_report[0]['value'];
+    dpm($node);
+  }
+}
 
 /* old email code that wasn't being used, so archiving it as of June 2016 -SRK
   // Skip all other content types.
