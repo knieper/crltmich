@@ -95,6 +95,7 @@ function crlt_grant_application_node_form_after_build( $form, &$form_state ) {
     //$form['field_grant']['#value'][0] = array('nid' => $_GET['field_grant']);
     //$form['field_grant']['nid']['#value'] = $_GET['field_grant'];
   }
+  $form['#validate'][] = 'crlt_grant_application_form_validate';
   return $form;
 }
 
@@ -106,10 +107,6 @@ function crlt_grant_application_node_form_after_build( $form, &$form_state ) {
  * as of June 2016 it appears that this code is not actually being used to send the email. The email is being handled by a rule
  */
 function crlt_grant_application_nodeapi( &$node, $op, $a3 = NULL, $a4 = NULL ) {
-// if($node->nid == 83685) {
-// drupal_set_message('<pre>' . print_r($node, true) . '</pre>');
-//
-// }
 
 if('grant_application' == $node->type){
   if($op == 'presave'){
@@ -125,7 +122,6 @@ if('grant_application' == $node->type){
     $enddate = $node->field_grant_application_dates[0]['value2'];
     $node->field_grant_application_report[0]['value'] = date( 'Y-m-d\TH:i:s', strtotime( $enddate . " + 3 months" ) );
     $node->field_grant_application_report[0]['value2'] = $node->field_grant_application_report[0]['value'];
-    dpm($node);
   }
 }
 
@@ -192,6 +188,56 @@ if('grant_application' == $node->type){
     }
   }
   end of old non-used email code - June 2016 srk*/
+
+}
+
+/*
+*
+* custom validation hook to provide better messages to end users when faculty do not already exist in the system
+* added to form in the afterbuild hook
+*/
+function crlt_grant_application_form_validate($form, &$form_state){
+//  dpm($form_state);
+  ///check to see if there's an error on the chair uniqname field and no user matched.
+  if($form_state['values']['field_grant_application_chair'][0]['uid'] === NULL){
+    //check to see if anything was posted.
+    if(is_array($form_state['clicked_button']['#post']['field_grant_application_chair'][0]['uid']) && empty($form_state['clicked_button']['#post']['field_grant_application_chair'][0]['uid']['uid'])){
+      form_set_error('field_grant_application_chair', t('Please enter a chair'), FALSE);
+    }
+    else{
+      //if something was submitted but there's no user associated with the submitted value create a dummy account and email CRLT.
+      $user_name = $form_state['clicked_button']['#post']['field_grant_application_chair'][0]['uid']['uid'];
+      $mail_address = $user_name.'@umich.edu';
+      $email = '"<a href="mailto:'.$mail_address.'">'.$mail_address.'</a>"';
+      $fields = array(
+        'name' => $user_name,
+        'mail' => $email,
+        'pass' => user_password(10),
+        'status' => 1,
+      );
+       $createdAccount = user_save('', $fields);
+      if($createdAccount){
+        $siteEmail = variable_get('site_mail', '');
+        $params = array(
+          'subject' => 'A new CRLT website account was created for a Grant Application',
+          'body' => 'User ID #'.$createdAccount->uid.' was created for a Grant Application. Please review and ensure it is based on a correctly spelled uniqname.',
+        );
+        drupal_mail('crlt_grant_application', 'new_faculty_account', $siteEmail, $language, $params, $from = 'crltgrants@umich.edu', $send = TRUE);
+        form_set_value($form['field_grant_application_chair'][0]['uid'], intval($createdAccount->uid), &$form_state);
+      }
+      //unset the error that said no match was found and re-index the remainding error messages
+      if(is_array($_SESSION['messages']['error'])){
+        $result = array_diff($_SESSION['messages']['error'], array('<em>Chair Uniqname</em>: found no valid user with that name.'));
+        $_SESSION['messages']['error'] = array_values($result);
+      }
+      if(empty($_SESSION['messages']['error'])){
+        unset($_SESSION['messages']['error']);
+        //if the chair uniqname was the only error then execute the submit handlers as if everything validated
+        form_execute_handlers('submit', $form, $form_state);
+      }
+
+    }
+  }
 
 }
 /**
