@@ -218,10 +218,11 @@ function crlt_grant_application_form_validate($form, &$form_state){
        $createdAccount = user_save('', $fields);
       if($createdAccount){
         $siteEmail = variable_get('site_mail', '');
-        $params = array();
-        $params['subject'] = 'A new CRLT website account was created for a Grant Application';
-        $params['body'] = 'User ID #'.$createdAccount->uid.' was created for a Grant Application. Please review and ensure it is based on a correctly spelled uniqname.';
-        drupal_mail('crlt_grant_application', 'new_faculty_account', $siteEmail, language_default(), $params, $from = 'crltgrants@umich.edu', $send = TRUE);
+        $mail_params = array(
+          'subject'=> 'A new CRLT website account was created for a Grant Application',
+          'body'=>'User ID #'.$createdAccount->uid.' was created for a Grant Application. Please review and ensure it is based on a correctly spelled uniqname.',
+        );
+        drupal_mail('crlt_grant_application', 'new_faculty_account', $siteEmail, language_default(), $mail_params, 'crltwebteam@umich.edu', TRUE);
         form_set_value($form['field_grant_application_chair'][0]['uid'], intval($createdAccount->uid), &$form_state);
       }
       //unset the error that said no match was found and re-index the remainding error messages
@@ -257,6 +258,10 @@ function crlt_grant_application_mail( $key, &$message, $params ) {
     foreach ( $headers as $key => $value ) {
       $message['headers'][$key] = $value;
     }
+    $message['subject'] = $params['subject'];
+    $message['body'] = $params['body'];
+  }
+  if ('new_faculty_account' == $key) {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
   }
