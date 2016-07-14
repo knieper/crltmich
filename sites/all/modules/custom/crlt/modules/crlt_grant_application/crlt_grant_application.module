@@ -296,7 +296,7 @@ function crlt_grant_application_mail( $key, &$message, $params ) {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
   }
-  if ('new_faculty_account' == $key) {
+  if ('new_faculty_account' == $key || 'new_applicant_account') {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
   }
