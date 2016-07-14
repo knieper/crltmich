@@ -194,7 +194,7 @@ if('grant_application' == $node->type){
 /*
 *
 * custom validation hook to provide better messages to end users when faculty do not already exist in the system
-* added to form in the afterbuild hook
+* added to form in the afterbuild hook. If the faculty chair field doesn't match a user it creates a stub account for faculty chairs and emails CRLT staff to look into it.
 */
 function crlt_grant_application_form_validate($form, &$form_state){
 //  dpm($form_state);
@@ -222,7 +222,7 @@ function crlt_grant_application_form_validate($form, &$form_state){
           'subject'=> 'A new CRLT website account was created for a Grant Application',
           'body'=>'User ID #'.$createdAccount->uid.' was created for a Grant Application. Please review and ensure it is based on a correctly spelled uniqname.',
         );
-        drupal_mail('crlt_grant_application', 'new_faculty_account', $siteEmail, language_default(), $mail_params, 'crltwebteam@umich.edu', TRUE);
+        drupal_mail('crlt_grant_application', 'new_faculty_account', $siteEmail, language_default(), $mail_params, 'crltgrants@umich.edu', TRUE);
         form_set_value($form['field_grant_application_chair'][0]['uid'], intval($createdAccount->uid), &$form_state);
       }
       //unset the error that said no match was found and re-index the remainding error messages
@@ -230,15 +230,50 @@ function crlt_grant_application_form_validate($form, &$form_state){
         $result = array_diff($_SESSION['messages']['error'], array('<em>Chair Uniqname</em>: found no valid user with that name.'));
         $_SESSION['messages']['error'] = array_values($result);
       }
-      if(empty($_SESSION['messages']['error'])){
-        unset($_SESSION['messages']['error']);
-        //if the chair uniqname was the only error then execute the submit handlers as if everything validated
-        form_execute_handlers('submit', $form, $form_state);
-      }
-
     }
   }
-
+  //adding applicant user check just the same as chair
+  $applicationUsers = $form_state['values']['field_grant_application_users'];
+  foreach($applicationUsers as $key =>$applicationUser){
+    if($applicationUser['uid'] === NULL){
+      //check to see if anything was posted. Because field is required this should never run.
+      if(is_array($form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']) && empty($form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']['uid'])){
+        form_set_error('field_grant_application_users', t('Please enter an applicant'), FALSE);
+      }
+      else{
+      //if something was submitted but there's no user associated with the submitted value create a dummy account and email CRLT.
+        $user_name = $form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']['uid'];
+        $mail_address = $user_name.'@umich.edu';
+        $email = '"<a href="mailto:'.$mail_address.'">'.$mail_address.'</a>"';
+        $fields = array(
+          'name' => $user_name,
+          'mail' => $email,
+          'pass' => user_password(10),
+          'status' => 1,
+        );
+        $createdAccount = user_save('', $fields);
+        if($createdAccount){
+          $siteEmail = variable_get('site_mail', '');
+          $mail_params = array(
+            'subject'=> 'A new CRLT website account was created for a Grant Application',
+            'body'=>'User ID #'.$createdAccount->uid.' was created for a Grant Application. Please review and ensure it is based on a correctly spelled uniqname.',
+          );
+          drupal_mail('crlt_grant_application', 'new_applicant_account', $siteEmail, language_default(), $mail_params, 'crltgrants@umich.edu', TRUE);
+          form_set_value($form['field_grant_application_users'][$key]['uid'], intval($createdAccount->uid), &$form_state);
+        }
+        //unset the error that said no match was found and re-index the remainding error messages
+        if(is_array($_SESSION['messages']['error'])){
+          $result = array_diff($_SESSION['messages']['error'], array('<em>Applicant(s)</em>: found no valid user with that name.'));
+          $_SESSION['messages']['error'] = array_values($result);
+        }
+      }
+    }
+  }
+  if(empty($_SESSION['messages']['error'])){
+    unset($_SESSION['messages']['error']);
+    //if the applicant was the only error then execute the submit handlers as if everything validated
+    form_execute_handlers('submit', $form, $form_state);
+  }
 }
 /**
  * Implements hook_mail($key, &$message, $params)
