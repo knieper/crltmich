@@ -29,3 +29,6 @@ sites/all/modules/reroute_email
 
 #ignore engaged-learning directory
 engaged-learning
+
+#ignore email reroute
+sites/all/modules/reroute_email
