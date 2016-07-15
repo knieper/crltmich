@@ -22,9 +22,13 @@ sites/all/README.txt
 sites/all/modules/README.txt
 sites/all/themes/README.txt
 
-#ignore devel module
+#ignore devel modules
 sites/all/modules/devel
 sites/all/modules/devel/*
+sites/all/modules/reroute_email
 
 #ignore engaged-learning directory
 engaged-learning
+
+#ignore email reroute
+sites/all/modules/reroute_email
