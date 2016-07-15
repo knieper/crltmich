@@ -52,6 +52,15 @@ function crlt_certificate_menu() {
     'page callback' => 'crlt_certificate_updated_time_batch',
     'access arguments' => array('administer users')
   );
+
+  $items['admin/crlt/certificate/demo-mail-settings'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'CRLT Certificate Demo Mail Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array( 'crlt_certificate_demo_mail_settings' ),
+    'access arguments' => array( 'administer users' ),
+  );
+
   return $items;
 }
 
@@ -75,36 +84,56 @@ function crlt_my_gtc_portfolio() {
  */
 function crlt_certificate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   if ($node->type != 'certificate') { return; }
-  if ($op != 'view') { return; }
   global $user;
-  // Only authenticated users who are admins, staff, a certificate's author, or a certificate's verifier,
-  // may view non GTC+ certificate nodes.
-  // @TODO - why isn't this in an access_callback function via hook_menu_alter()?
-  if (in_array('CRLT Staff', $user->roles) || in_array('admin', $user->roles)) {
-    return;
+  if($op = 'presave' || ($node->uid == $user->uid)){
+    $account = user_load($user->uid);
+    if(!empty($node->field_for_profile_first_name[0][value])) {
+      $edit['profile_first_name'] = $node->field_for_profile_first_name[0][value];
+    }
+    else
+      {
+        $edit['profile_first_name'] = $account->profile_first_name;
+      }
+    if(!empty($node->field_for_profile_last_name[0][value])) {
+        $edit['profile_last_name'] = $node->field_for_profile_last_name[0][value];
+    }
+    else
+      {
+        $edit['profile_last_name'] = $account->profile_last_name;
+      }
+    $category = 'Personal Information';
+    profile_save_profile(&$edit, &$user, $category, $register = FALSE);
   }
-  $type = $node->field_certificate_type[0]['value'];
-  if (
-    $user->uid != 0 &&
-    !in_array($type, array('A', 'B1', 'B1_mc', 'B1_it', 'B2', 'C1', 'C2', 'D', 'E'))
-  ) {
-    // OK to view...
-    return;
-  }
-  else if  (
-    $user->uid == $node->uid ||
-    (
-      in_array($type, array('C1', 'C2', 'D')) &&
-      isset($node->field_certificate_mail[0]['value']) &&
-      $node->field_certificate_mail[0]['value'] != '' &&
-      $node->field_certificate_mail[0]['value'] == $user->mail
-    )
-  ) {
-    // OK to view...
-    return;
-  }
+  if ($op = 'view') {
+    // Only authenticated users who are admins, staff, a certificate's author, or a certificate's verifier,
+    // may view non GTC+ certificate nodes.
+    // @TODO - why isn't this in an access_callback function via hook_menu_alter()?
+    if (in_array('CRLT Staff', $user->roles) || in_array('admin', $user->roles)) {
+      return;
+    }
+    $type = $node->field_certificate_type[0]['value'];
+    if (
+      $user->uid != 0 &&
+      !in_array($type, array('A', 'B1', 'B1_mc', 'B1_it', 'B2', 'C1', 'C2', 'D', 'E'))
+    ) {
+      // OK to view...
+      return;
+    }
+    else if  (
+      $user->uid == $node->uid ||
+      (
+        in_array($type, array('C1', 'C2', 'D')) &&
+        isset($node->field_certificate_mail[0]['value']) &&
+        $node->field_certificate_mail[0]['value'] != '' &&
+        $node->field_certificate_mail[0]['value'] == $user->mail
+        )
+    ) {
+      // OK to view...
+      return;
+    }
   drupal_set_message("Sorry, you are not authorized to view certificate $node->nid. If the problem persists, please e-mail UMGraduateTeacherCertificate@umich.edu for more information.", 'error');
   drupal_goto('');
+  }
 }
 
 /**
@@ -733,8 +762,8 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
           $internal = TRUE;
 
           // Set to true to only send notifications to developer.
-          $demo = FALSE;
-          $demo_recipient = "mbakewell@umich.edu";
+          $demo = variable_get( 'crlt_certificate_demo_mail_setting', 'FALSE' );
+          $demo_recipient = variable_get('crlt_certificate_demo_mail_address', variable_get('site_mail', ''));
 
           if ($workflow == "CRLT Certificate Workflow" || $wid == 2) {
 
@@ -842,6 +871,10 @@ function crlt_certificate_workflow($op, $old_sid, $sid, $node) {
                 if (strpos($body, '[node:content]') !== FALSE) {
                   $body = str_replace('[node:content]', node_view($node, TRUE, FALSE, FALSE), $body);
                 }
+                if (strpos($body, '[node:body]') !== FALSE) {
+                  $body = str_replace('[node:body]', $node->body, $body);
+                }
+
               }
 
               // Send out the e-mail.
@@ -1040,4 +1073,28 @@ function crlt_certificate_get_term_end_date($term) {
     case 'Fall': $date .= "-12-31";  break;
   }
   return strtotime($date);
+}
+
+function crlt_certificate_demo_mail_settings( &$form_state){
+  $form = array();
+  $form['demo_mail_setting'] = array(
+    '#type' => 'radios',
+    '#title' => t('Enable sending certificate reminders to a test email address'),
+    '#description' => t('TRUE = emails will only go to demo email'),
+    '#default_value' => variable_get( 'crlt_certificate_demo_mail_setting', 'FALSE' ),
+    '#options' => array(TRUE => 'TRUE', FALSE => 'FALSE'),
+  );
+  $form['demo_mail_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Address to send demo email reminders to'),
+    '#default_value' => variable_get('crlt_certificate_demo_mail_address', variable_get('site_mail', '')),
+  );
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  return $form;
+}
+
+function crlt_certificate_demo_mail_settings_submit( $form, &$form_state ) {
+  variable_set('crlt_certificate_demo_mail_setting', $form_state['values']['demo_mail_setting']);
+  variable_set('crlt_certificate_demo_mail_address', $form_state['values']['demo_mail_address']);
+  drupal_set_message( 'Demo Mail settings saved!' );
 }

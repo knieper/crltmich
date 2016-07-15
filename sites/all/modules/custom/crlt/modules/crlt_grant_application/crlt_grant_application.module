@@ -37,6 +37,14 @@ function crlt_grant_application_menu() {
     'file' => 'crlt_grant_report_mail_settings.form.inc'
   );
 
+  $items['admin/crlt/grant-applications/demo-mail-settings'] = array(
+    'type' => MENU_CALLBACK,
+    'title' => 'CRLT Grant Application Demo Mail Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array( 'crlt_grant_application_demo_mail_settings' ),
+    'access arguments' => array( 'administer users' ),
+  );
+
   return $items;
 }
 
@@ -87,6 +95,7 @@ function crlt_grant_application_node_form_after_build( $form, &$form_state ) {
     //$form['field_grant']['#value'][0] = array('nid' => $_GET['field_grant']);
     //$form['field_grant']['nid']['#value'] = $_GET['field_grant'];
   }
+  $form['#validate'][] = 'crlt_grant_application_form_validate';
   return $form;
 }
 
@@ -98,10 +107,25 @@ function crlt_grant_application_node_form_after_build( $form, &$form_state ) {
  * as of June 2016 it appears that this code is not actually being used to send the email. The email is being handled by a rule
  */
 function crlt_grant_application_nodeapi( &$node, $op, $a3 = NULL, $a4 = NULL ) {
-// if($node->nid == 83685) {
-// drupal_set_message('<pre>' . print_r($node, true) . '</pre>');
-//
-// }
+
+if('grant_application' == $node->type){
+  if($op == 'presave'){
+    //if the report due field is for some reason not filled in set it off of the project end date
+    if(empty($node->field_grant_application_report[0]['value'])){
+      $enddate = $node->field_grant_application_dates[0]['value2'];
+      $node->field_grant_application_report[0]['value'] = date( 'Y-m-d\TH:i:s', strtotime( $enddate . " + 3 months" ) );
+      $node->field_grant_application_report[0]['value2'] = $node->field_grant_application_report[0]['value'];
+    }
+  }
+  //when creating new reports set report due date off of the project end date regardless of if it was set or not.
+  if($op == 'insert'){
+    $enddate = $node->field_grant_application_dates[0]['value2'];
+    $node->field_grant_application_report[0]['value'] = date( 'Y-m-d\TH:i:s', strtotime( $enddate . " + 3 months" ) );
+    $node->field_grant_application_report[0]['value2'] = $node->field_grant_application_report[0]['value'];
+  }
+}
+
+/* old email code that wasn't being used, so archiving it as of June 2016 -SRK
   // Skip all other content types.
   if (FALSE && 'grant_application' == $node->type && 'insert' == $op ) {
     // Skip SiteMaker content migration nodes
@@ -163,6 +187,93 @@ function crlt_grant_application_nodeapi( &$node, $op, $a3 = NULL, $a4 = NULL ) {
       // }
     }
   }
+  end of old non-used email code - June 2016 srk*/
+
+}
+
+/*
+*
+* custom validation hook to provide better messages to end users when faculty do not already exist in the system
+* added to form in the afterbuild hook. If the faculty chair field doesn't match a user it creates a stub account for faculty chairs and emails CRLT staff to look into it.
+*/
+function crlt_grant_application_form_validate($form, &$form_state){
+//  dpm($form_state);
+  ///check to see if there's an error on the chair uniqname field and no user matched.
+  if($form_state['values']['field_grant_application_chair'][0]['uid'] === NULL){
+    //check to see if anything was posted.
+    if(is_array($form_state['clicked_button']['#post']['field_grant_application_chair'][0]['uid']) && empty($form_state['clicked_button']['#post']['field_grant_application_chair'][0]['uid']['uid'])){
+      form_set_error('field_grant_application_chair', t('Please enter a chair'), FALSE);
+    }
+    else{
+      //if something was submitted but there's no user associated with the submitted value create a dummy account and email CRLT.
+      $user_name = $form_state['clicked_button']['#post']['field_grant_application_chair'][0]['uid']['uid'];
+      $mail_address = $user_name.'@umich.edu';
+      $email = '"<a href="mailto:'.$mail_address.'">'.$mail_address.'</a>"';
+      $fields = array(
+        'name' => $user_name,
+        'mail' => $email,
+        'pass' => user_password(10),
+        'status' => 1,
+      );
+       $createdAccount = user_save('', $fields);
+      if($createdAccount){
+        $siteEmail = variable_get('site_mail', '');
+        $mail_params = array(
+          'subject'=> 'A new CRLT website account was created for a Grant Application',
+          'body'=>'User ID #'.$createdAccount->uid.' was created for a Grant Application. Please review and ensure it is based on a correctly spelled uniqname.',
+        );
+        drupal_mail('crlt_grant_application', 'new_faculty_account', $siteEmail, language_default(), $mail_params, 'crltgrants@umich.edu', TRUE);
+        form_set_value($form['field_grant_application_chair'][0]['uid'], intval($createdAccount->uid), &$form_state);
+      }
+      //unset the error that said no match was found and re-index the remainding error messages
+      if(is_array($_SESSION['messages']['error'])){
+        $result = array_diff($_SESSION['messages']['error'], array('<em>Chair Uniqname</em>: found no valid user with that name.'));
+        $_SESSION['messages']['error'] = array_values($result);
+      }
+    }
+  }
+  //adding applicant user check just the same as chair
+  $applicationUsers = $form_state['values']['field_grant_application_users'];
+  foreach($applicationUsers as $key =>$applicationUser){
+    if($applicationUser['uid'] === NULL){
+      //check to see if anything was posted. Because field is required this should never run.
+      if(is_array($form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']) && empty($form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']['uid'])){
+        form_set_error('field_grant_application_users', t('Please enter an applicant'), FALSE);
+      }
+      else{
+      //if something was submitted but there's no user associated with the submitted value create a dummy account and email CRLT.
+        $user_name = $form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']['uid'];
+        $mail_address = $user_name.'@umich.edu';
+        $email = '"<a href="mailto:'.$mail_address.'">'.$mail_address.'</a>"';
+        $fields = array(
+          'name' => $user_name,
+          'mail' => $email,
+          'pass' => user_password(10),
+          'status' => 1,
+        );
+        $createdAccount = user_save('', $fields);
+        if($createdAccount){
+          $siteEmail = variable_get('site_mail', '');
+          $mail_params = array(
+            'subject'=> 'A new CRLT website account was created for a Grant Application',
+            'body'=>'User ID #'.$createdAccount->uid.' was created for a Grant Application. Please review and ensure it is based on a correctly spelled uniqname.',
+          );
+          drupal_mail('crlt_grant_application', 'new_applicant_account', $siteEmail, language_default(), $mail_params, 'crltgrants@umich.edu', TRUE);
+          form_set_value($form['field_grant_application_users'][$key]['uid'], intval($createdAccount->uid), &$form_state);
+        }
+        //unset the error that said no match was found and re-index the remainding error messages
+        if(is_array($_SESSION['messages']['error'])){
+          $result = array_diff($_SESSION['messages']['error'], array('<em>Applicant(s)</em>: found no valid user with that name.'));
+          $_SESSION['messages']['error'] = array_values($result);
+        }
+      }
+    }
+  }
+  if(empty($_SESSION['messages']['error'])){
+    unset($_SESSION['messages']['error']);
+    //if the applicant was the only error then execute the submit handlers as if everything validated
+    form_execute_handlers('submit', $form, $form_state);
+  }
 }
 /**
  * Implements hook_mail($key, &$message, $params)
@@ -182,6 +293,10 @@ function crlt_grant_application_mail( $key, &$message, $params ) {
     foreach ( $headers as $key => $value ) {
       $message['headers'][$key] = $value;
     }
+    $message['subject'] = $params['subject'];
+    $message['body'] = $params['body'];
+  }
+  if ('new_faculty_account' == $key || 'new_applicant_account') {
     $message['subject'] = $params['subject'];
     $message['body'] = $params['body'];
   }
@@ -285,11 +400,11 @@ function _crlt_grant_application_report_reminders_send( $view_dispays, $report_r
       $applicant = user_load( array( 'uid'=>$grant_application->uid ) );
     }
     /*adding demo email capability to test - June 2016 srk*/
-      $demo = FALSE;
-      $demo_recipient = "sharonknieper@gmail.com";
+      $demo = variable_get( 'crlt_grant_application_demo_mail_setting', FALSE );
+      $demo_recipient = variable_get('crlt_grant_application_demo_mail_address', variable_get('site_mail', ''));
 
       if ($demo) {
-        $recipient = $demo_recipient;
+        $recipient = array($demo_recipient);
         }
       else{
         $recipient = $applicant->mail;
@@ -430,4 +545,28 @@ function crlt_grant_application_report_form_access( $nid ) {
     drupal_set_message( 'Invalid grant application node: ' . $nid, 'error' );
   }
   return $authorized;
+}
+
+function crlt_grant_application_demo_mail_settings( &$form_state){
+  $form = array();
+  $form['demo_mail_setting'] = array(
+    '#type' => 'radios',
+    '#title' => t('Enable sending grant report reminders to a test email'),
+    '#description' => t('TRUE = emails will only go to demo email'),
+    '#default_value' => variable_get( 'crlt_grant_application_demo_mail_setting', 'FALSE' ),
+    '#options' => array(TRUE => 'TRUE', FALSE => 'FALSE'),
+  );
+  $form['demo_mail_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Address to send demo email reminders to'),
+    '#default_value' => variable_get('crlt_grant_application_demo_mail_address', variable_get('site_mail', '')),
+  );
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  return $form;
+}
+
+function crlt_grant_application_demo_mail_settings_submit( $form, &$form_state ) {
+  variable_set('crlt_grant_application_demo_mail_setting', $form_state['values']['demo_mail_setting']);
+  variable_set('crlt_grant_application_demo_mail_address', $form_state['values']['demo_mail_address']);
+  drupal_set_message( 'Demo Mail settings saved!' );
 }
