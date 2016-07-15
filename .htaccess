@@ -115,6 +115,7 @@ DirectoryIndex index.php
   # uncomment the following line:
   # RewriteBase /
 
+RewriteRule ^diversity-and-inclusion$ http://crlt.umich.edu/multicultural-teaching [L,R=301]
 RewriteRule ^gsis$ http://crlt.umich.edu/programs-services/graduate-students-post-docs [L,R=301]
 RewriteRule ^gspd$ http://crlt.umich.edu/programs-services/graduate-students-post-docs [L,R=301]
 RewriteRule ^publinks\/racialguidelines$ http://crlt.umich.edu/publinks/respondingtobias [L,R=301]
