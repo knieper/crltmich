@@ -197,7 +197,7 @@ if('grant_application' == $node->type){
 * added to form in the afterbuild hook. If the faculty chair field doesn't match a user it creates a stub account for faculty chairs and emails CRLT staff to look into it.
 */
 function crlt_grant_application_form_validate($form, &$form_state){
-//  dpm($form_state);
+  //dpm($form_state);
   ///check to see if there's an error on the chair uniqname field and no user matched.
   if($form_state['values']['field_grant_application_chair'][0]['uid'] === NULL){
     //check to see if anything was posted.
@@ -237,10 +237,7 @@ function crlt_grant_application_form_validate($form, &$form_state){
   foreach($applicationUsers as $key =>$applicationUser){
     if($applicationUser['uid'] === NULL){
       //check to see if anything was posted. Because field is required this should never run.
-      if(is_array($form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']) && empty($form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']['uid'])){
-        form_set_error('field_grant_application_users', t('Please enter an applicant'), FALSE);
-      }
-      else{
+      if(is_array($form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']) && !empty($form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']['uid'])){
       //if something was submitted but there's no user associated with the submitted value create a dummy account and email CRLT.
         $user_name = $form_state['clicked_button']['#post']['field_grant_application_users'][$key]['uid']['uid'];
         $mail_address = $user_name.'@umich.edu';
@@ -269,6 +266,7 @@ function crlt_grant_application_form_validate($form, &$form_state){
       }
     }
   }
+//  dpm($form_state);
   if(empty($_SESSION['messages']['error'])){
     unset($_SESSION['messages']['error']);
     //if the applicant was the only error then execute the submit handlers as if everything validated
