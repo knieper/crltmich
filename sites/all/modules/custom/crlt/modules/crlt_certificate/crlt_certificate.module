@@ -114,7 +114,7 @@ function crlt_certificate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     $type = $node->field_certificate_type[0]['value'];
     if (
       $user->uid != 0 &&
-      !in_array($type, array('A', 'B1', 'B1_mc', 'B1_it', 'B2', 'C1', 'C2', 'D', 'E'))
+      !in_array($type, array('A', 'B1', 'B2_mc', 'B2_it', 'B2', 'C1', 'C2', 'D', 'E'))
     ) {
       // OK to view...
       return;
@@ -500,15 +500,15 @@ function crlt_certificate_form_after_build($form, &$form_state) {
       $access[] = 'field_certificate_term';
       $access[] = 'field_certificate_sponsor_unit';
       break;
-    case 'B1':
-    case 'B1_mc':
-    case 'B1_it':
+    case 'B2':
+    case 'B2_mc':
+    case 'B2_it':
     case 'G':
     case 'G_it':
       $access[] = 'field_certificate_term';
       $access[] = 'field_certificate_sponsor_unit';
       break;
-    case 'B2':
+    case 'B1':
       $access[] = 'field_certificate_term';
       $access[] = 'field_certificate_class';
       break;

@@ -57,7 +57,7 @@ function crlt_badges_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   // Define the certificate badges that can be earned. FYI, these do not match exactly with
   // the certificate type machine names.
   $badges = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
-  $types = array('A', 'B1', 'B1_mc', 'B1_it', 'B2', 'C1', 'C2', 'D', 'E', 'F', 'F0', 'G', 'G_it', 'H', 'I', 'J');
+  $types = array('A', 'B1', 'B2_mc', 'B2_it', 'B2', 'C1', 'C2', 'D', 'E', 'F', 'F0', 'G', 'G_it', 'H', 'I', 'J');
 
   // Grab all the certificates authored by this user that are published and not
   // denied or cancelled.
@@ -186,13 +186,13 @@ function crlt_badges_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 
   // B
   $badge = 'B';
-  // 1 B2 = completed OR
-  // 5 B1 = completed (any combo of B1, B1_mc, B1_it that add up to 5, but at least one must be IT and one MC.
+  // 1 B1 = completed OR
+  // 5 B2 = completed (any combo of B2, B2_mc, B2_it that add up to 5, but at least one must be IT and one MC.
   if (
-    $approved_counts['B2'] >= 1 ||
+    $approved_counts['B1'] >= 1 ||
     (
-      ($approved_counts['B1'] + $approved_counts['B1_mc'] + $approved_counts['B1_it'] >= 5) &&
-      $approved_counts['B1_mc'] >= 1 && $approved_counts['B1_it'] >= 1
+      ($approved_counts['B2'] + $approved_counts['B2_mc'] + $approved_counts['B2_it'] >= 5) &&
+      $approved_counts['B2_mc'] >= 1 && $approved_counts['B2_it'] >= 1
     )
   ) {
     crlt_badges_move_from_in_process_to_completed($certs, 'badges', $badge);
