@@ -3,7 +3,7 @@
 /**
  * NOTE: The event signup certificate sync code is located in the crlt_event
  * module. This sub module was created because the crlt_certificate module is
- * already huge. Consider moving the event singup certificate sync code in here. 
+ * already huge. Consider moving the event singup certificate sync code in here.
  */
 
 /**
@@ -33,17 +33,17 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   // updated or deleted.
   if (isset($node->type) && $node->type != 'consultation' && $node->status == 1) { return; }
   if (!in_array($op, array('insert', 'update', 'delete'))) { return; }
-  
+
   global $user;
-  
+
   // Prepare a messages array for admins.
   $messages = array();
-  
+
   //$messages[] = array('<pre>' . print_r($node, true) . '</pre>');
-  
+
   // Determine the type of consultation.
   $consultation_type = $node->field_consult_type[0]['value'];
-  
+
   // Depending on the type of consultation, determine the type of certificate
   // (if any) this is eligable for.
   $type = null;
@@ -62,7 +62,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     crlt_show_messages($messages);
     return;
   }
-  
+
   // Determine the verifier for this consultation. The verifier will be used as
   // the workflow user for the certificate node(s). If the verifier is a
   // 'gtc-YYYY' user, then load up the user marked on the GTC field.
@@ -84,11 +84,11 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       return;
     }
   }
-  
+
   // Since the consultation can have multiple consultation clients, we need to
   // iterate over each client (user) and sync their certificate(s).
   foreach($node->field_client as $delta => $client) {
-    
+
     // Load the client user account (author of the certificate).
     $account = user_load($client['uid']);
     if (!$account) {
@@ -96,14 +96,14 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       crlt_show_messages($messages);
       return;
     }
-    
+
     // If the client is not a grad student, we don't process any certificates
     // for them.
     if (!isset($account->Rank) || $account->Rank != 'Graduate Student') {
       $messages[] = array("Client ($account->name) is not a grad student, skipping certificate synchronization");
       continue;
     }
-    
+
     // Are we creating a new certificiate, or updating an existing one?
     $new = TRUE;
     $sql = "
@@ -120,7 +120,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     ";
     $certificate_nid = db_result(db_query($sql, $type, $account->uid, $node->nid));
     if ($certificate_nid) { $new = FALSE; }
-    
+
     // When a consultation is deleted, and a certificate exists, deny the
     // certificate. Switch the active user during the process so the workflow
     // is set properly, then switch back.
@@ -135,9 +135,9 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     }
     // Handle new and existing certificates.
     else if ($new && $node->field_status[0]['value'] == 'Complete') {
-      
+
       // This is a new certificate...
-      
+
       $messages[] = array("Creating new certificate $type for " . l($account->name, "user/$account->uid") . ".");
       // Create a new certificate node.
       $certificate = new stdClass();
@@ -172,7 +172,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         // On certificate E, if the consultation has its "Is this for
         // certificate?" field checked, and the "Teaching Philosophy Approved"
         // field is 'yes', then we can set it to approved, but if the TPA is set
-        // to 'no' then the cert should be denied. 
+        // to 'no' then the cert should be denied.
         if ($type == 'E') {
           // We'll initally deny all type E's, unless we prove otherwise.
           $sid = 11; // Denied.
@@ -184,9 +184,9 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
             $node->field_consultation_tp_cert[0]['value'] == 1
           ) {
             $sid = 10; // Approved.
-            $workflow_comment = "Consultation #$node->nid Teach Philosophy Approved";  
+            $workflow_comment = "Consultation #$node->nid Teach Philosophy Approved";
           }
-          
+
         }
         // END: duplicate code block
         $certificate->workflow_comment = $workflow_comment;
@@ -210,10 +210,10 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           'error'
         );
       }
-      
+
     }
     else {
-      
+
       // This is an existing certificate, depending on the consultation status,
       // move the certificate workflow to its appropriate state.
       if (!$certificate_nid) { return; }
@@ -228,7 +228,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         // On certificate E, if the consultation has its "Is this for
         // certificate?" field checked, and the "Teaching Philosophy Approved"
         // field is 'yes', then we can set it to approved, but if the TPA is set
-        // to 'no' then the cert should be denied. 
+        // to 'no' then the cert should be denied.
         if ($type == 'E') {
           // We'll initally deny all type E's, unless we prove otherwise.
           $sid = 11; // Denied.
@@ -240,7 +240,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
             $node->field_consultation_tp_cert[0]['value'] == 1
           ) {
             $sid = 10; // Approved.
-            $workflow_comment = "Consultation #$node->nid Teach Philosophy Approved";  
+            $workflow_comment = "Consultation #$node->nid Teach Philosophy Approved";
           }
         }
         // END: duplicate code block
@@ -250,13 +250,13 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         workflow_transition($certificate, $sid);
         $user = $current_user;
       }
-      
+
     }
-    
+
   }
 
   crlt_show_messages($messages);
-  
+
 }
 
 function crlt_certificate_sync_update_last_participation_time_batch() {
@@ -308,7 +308,7 @@ function crlt_certificate_sync_expire_old_certificates_batch() {
   $now = time();
   $expiration = $now - (60*60*24*365*5); // Five years ago.
   drupal_set_message("Today is " . date('Y-m-d', $now) . ", we're going to potentially expire certificates older than " . date('Y-m-d', $expiration) . '.');
-  
+
   // Grab the semester term field values and labels.
   $terms = crlt_field_allowed_values_list_as_array('field_certificate_term');
 
@@ -346,23 +346,23 @@ function crlt_certificate_sync_expire_old_certificates_batch() {
 }
 
 function crlt_certificate_sync_expire_old_certificates_batch_process($nid, $now, $expiration, $terms, &$context) {
-  
+
   // Load the certificate and its owner's account, and grab the cert type.
   $certificate = node_load($nid);
   $account = user_load($certificate->uid);
   $type = $certificate->field_certificate_type[0]['value'];
-  
+
   // Begin processing. We'll warn the active user whenever a certificate is
   // about to be expired, otherwise we'll give them a status message. We'll
   // assume we are expiring each certificate, unless we prove otherwise.
   $title = $certificate->title;
   if (!isset($title) || empty($title)) { $title = "Certificate $type"; }
-  $msg = "Processing " . l($title, "node/$nid") . " for " . 
+  $msg = "Processing " . l($title, "node/$nid") . " for " .
     l($account->name, "user/$account->uid") . ", it was created on " .
     date('Y-m-d', $certificate->created) . "... ";
   $msg_type = 'status';
   $expiring = TRUE;
-  
+
   // We need the certificate's term (end of term) date (except on type E, just
   // use the node created date), as the cutoff date for expiration, unless the
   // certificate doesn’t have a term, then throw an error explaining that the
@@ -388,7 +388,7 @@ function crlt_certificate_sync_expire_old_certificates_batch_process($nid, $now,
     $context['message'] = "Error on certificate $type for $account->name...";
     return;
   }
-  
+
   // Has the certificate time expired?
   $expired = TRUE;
   if ($certificate_time > $expiration) {
@@ -407,14 +407,14 @@ function crlt_certificate_sync_expire_old_certificates_batch_process($nid, $now,
   // The certificate has expired, however there are some special cases where we
   // won't expire the certificate...
   if ($expired) {
-    
+
     // Set up potential database values for the Paper Certificate to NOT be
     // considered.
     $do_not_consider = array('', NULL, 'No', 'no');
-    
+
     // Certificates B, C, D and E do not expire for any user with GTC certificate.
     // paper issued.
-    if (in_array($type, array('B1', 'B1_mc', 'B1_it', 'B2', 'C1', 'C2', 'D', 'E'))) {
+    if (in_array($type, array('B1', 'B2_mc', 'B2_it', 'B2', 'C1', 'C2', 'D', 'E'))) {
       if (
         isset($account->profile_gtc_certificate_issued) &&
         !in_array($account->profile_gtc_certificate_issued, $do_not_consider)
@@ -427,7 +427,7 @@ function crlt_certificate_sync_expire_old_certificates_batch_process($nid, $now,
         $msg_type = 'warning';
       }
     }
-  
+
     // Certificates F, G, H, I J do not expire for any user with GTC+ certificate.
     // paper issued.
     if (in_array($type, array('F', 'F0', 'G', 'G_it', 'H', 'I', 'J'))) {
@@ -443,9 +443,9 @@ function crlt_certificate_sync_expire_old_certificates_batch_process($nid, $now,
         $msg_type = 'warning';
       }
     }
-    
+
   }
-  
+
   // Are we expiring it?
   if ($expiring) {
     crlt_badges_nodeapi($certificate, 'update', FALSE);

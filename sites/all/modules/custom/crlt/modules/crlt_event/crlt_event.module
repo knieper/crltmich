@@ -381,15 +381,15 @@ function crlt_event_get_certificate_type_from_eligibility($event) {
   switch ($event->field_eligible_for_certificate[0]['value']) {
     case 'Eligible for Graduate Teacher Certificate':
     case 'Eligible for Graduate Teacher Certificate - Requirement B2':
-      $type = 'B1';
+      $type = 'B2';
       break;
     case 'Eligible for Graduate Teacher Certificate - Requirement B2, Instructional Technology':
     case 'Eligible for Graduate Teacher Certificate - Instructional Technology':
-      $type = 'B1_it';
+      $type = 'B2_it';
       break;
     case 'Eligible for Graduate Teacher Certificate - Requirement B2, Multicultural Teaching':
     case 'Eligible for Graduate Teacher Certificate - Multicultural Teaching':
-      $type = 'B1_mc';
+      $type = 'B2_mc';
       break;
     case 'Eligible for Graduate Teacher Certificate - Requirement B3':
     case 'Eligible for Graduate Teacher Certificate - Requirement B3 ':
