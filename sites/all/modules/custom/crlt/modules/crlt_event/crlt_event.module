@@ -283,8 +283,8 @@ function crlt_event_signup_synchronization($mode, $signup) {
         $certificate_copy->vid = null;
         $certificate_copy->workflow_comment = null;
         $certificate_copy->_workflow = null;
-        $certificate_copy->title = str_replace($type, 'B2', $certificate->title);
-        $certificate_copy->field_certificate_type = array(array('value' => 'B2'));
+        $certificate_copy->title = str_replace($type, 'B1', $certificate->title);
+        $certificate_copy->field_certificate_type = array(array('value' => 'B1'));
         node_save($certificate_copy);
         if ($certificate_copy->nid) {
           $messages[] = array("Created dual certificate! " . l('See it', "node/$certificate_copy->nid"));
