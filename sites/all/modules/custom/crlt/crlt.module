@@ -189,12 +189,14 @@ function crlt_views_pre_render(&$view) {
     // For each result in the view, determine the background color specified
     // for the event series and package them onto the $view object so the
     // colors will be available in the views-view--table template file on our theme. 
-    //drupal_set_message('<pre>' . print_r($view->result, true) . '</pre>');
     $series_list = crlt_field_allowed_values_list_as_array('field_presented_by');
     $view->crlt_event_series_bg_colors = array();
     foreach($view->result as $row_index => $result) {
-      $index = array_search($result->node_data_field_event_planning_notes_field_presented_by_value, $series_list);
+      //$index = array_search($result->node_data_field_event_planning_notes_field_presented_by_value, $series_list);
+      $index = array_search($result->node_data_field_audience_field_presented_by_value, $series_list);
+    //drupal_set_message('<pre>' . print_r($result, true) . '</pre>');
       $view->crlt_event_series_bg_colors[$row_index] = variable_get(crlt_event_series_key('series', $index), '');
+    //drupal_set_message('<pre>' . print_r($view->crlt_event_series_bg_colors[$row_index], true) . '</pre>');
     }
     $flags = crlt_field_allowed_values_list_as_array('field_event_flag');
     $view->crlt_event_flags = $flags;
