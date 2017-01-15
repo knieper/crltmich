@@ -116,33 +116,28 @@ DirectoryIndex index.php
   # RewriteBase /
 
   RewriteRule ^publinks\/(.*)pdf$ http://www.crlt.umich.edu/sites/default/files/resource_files/$1pdf [L,R,NC]
-  RewriteCond %{QUERY_STRING} destination=node%25252F(\d+)
-  RewriteCond %{REQUEST_URI} !cancel
-  #RewriteRule .* https://www.crlt.umich.edu/node/%1? [R,L]
-
-  RewriteCond %{QUERY_STRING} destination=node%25252F(\d+)%252523comment-form
-  RewriteRule .* https://www.crlt.umich.edu/node/%1#comment-form [R,L]
-
-  RewriteCond %{HTTPS} !=on
-  RewriteCond %{REQUEST_URI} ^(/imp/enroll|/imp/findmentor|/imp/reimbursementrequest|imp/facultymentordirectory)$
-  RewriteRule ^imp\/(.*)$ https://www.crlt.umich.edu/imp/$1 [L,R,NC]
-  RewriteCond %{HTTPS} !=on
-  RewriteCond %{REQUEST_URI} /account/events/attended
-  RewriteRule ^account/events/attended$ https://www.crlt.umich.edu/account/events/attended [L,R,NC]
-  RewriteCond %{HTTPS} !=on
-  RewriteCond %{REQUEST_URI} /bio171-005
-  RewriteRule ^bio171-005$ https://www.crlt.umich.edu/bio171-005 [L,R,NC]
-  RewriteCond %{HTTPS} !=on
-  RewriteCond %{REQUEST_URI} /bio171f12msf
-  RewriteRule ^bio171f12msf$ https://www.crlt.umich.edu/bio171f12msf [L,R,NC]
-  RewriteCond %{HTTPS} !=on
-  RewriteCond %{REQUEST_URI} /signup/cancel/.*
-  RewriteRule ^signup/cancel/(.*)$ https://www.crlt.umich.edu/signup/cancel/$1? [L,R,NC]
+  
+  #RewriteCond %{HTTPS} !=on
+  #RewriteCond %{REQUEST_URI} ^(/imp/enroll|/imp/findmentor|/imp/reimbursementrequest|imp/facultymentordirectory)$
+  #RewriteRule ^imp\/(.*)$ https://www.crlt.umich.edu/imp/$1 [L,R,NC]
+  #RewriteCond %{HTTPS} !=on
+  #RewriteCond %{REQUEST_URI} /account/events/attended
+  #RewriteRule ^account/events/attended$ https://www.crlt.umich.edu/account/events/attended [L,R,NC]
+  #RewriteCond %{HTTPS} !=on
+  #RewriteCond %{REQUEST_URI} /bio171-005
+  #RewriteRule ^bio171-005$ https://www.crlt.umich.edu/bio171-005 [L,R,NC]
+  #RewriteCond %{HTTPS} !=on
+  #RewriteCond %{REQUEST_URI} /bio171f12msf
+  #RewriteRule ^bio171f12msf$ https://www.crlt.umich.edu/bio171f12msf [L,R,NC]
+  #RewriteCond %{HTTPS} !=on
+  #RewriteCond %{REQUEST_URI} /signup/cancel/.*
+  #RewriteRule ^signup/cancel/(.*)$ https://www.crlt.umich.edu/signup/cancel/$1? [L,R,NC]
 
 #[L,R,NC]
-  RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/node/%1/ [L,R,NC]
-  RewriteCond %{QUERY_STRING} !(\d+)$
-  RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/ [L,R,NC]
+# these rewrite rules were causing the double encoding of urls that I realized I was trying to counter with additional rewrites. Likely originally inspired by incomplete ssl configuration. Turned off 1-9-17
+ # RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/node/%1/ [L,R,NC]
+ # RewriteCond %{QUERY_STRING} !(\d+)$
+ # RewriteRule ^(.*)user(.*)login(.*)$ https://www.crlt.umich.edu/ [L,R,NC]
 
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
