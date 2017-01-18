@@ -85,26 +85,41 @@ function crlt_my_gtc_portfolio() {
 function crlt_certificate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   if ($node->type != 'certificate') { return; }
   global $user;
-  if($op = 'presave' || ($node->uid == $user->uid)){
+  dpm($op);
+  //pull in exisiting profile values. doing here instead of in hook_form_alter because may be trying to edit and run the risk of previously entered on the cert data overwriting that entered on the account edit
+  if($op == 'load' && ($node->uid == $user->uid)){
+    //If profile fields exist place in form
     $account = user_load($user->uid);
-    if(!empty($node->field_for_profile_first_name[0][value])) {
-      $edit['profile_first_name'] = $node->field_for_profile_first_name[0][value];
+    if($account->profile_first_name){
+    	$node->field_for_profile_first_name[0]['value'] = $account->profile_first_name;
+	}	
+	if($account->profile_last_name){
+    	$node->field_for_profile_last_name[0]['value'] = $account->profile_last_name;
+	}	
+  }
+  if($op == 'presave' && ($node->uid == $user->uid)){
+    $account = user_load($user->uid);
+    if(!empty($node->field_for_profile_first_name[0]['value'])) {
+      $edit['profile_first_name'] = $node->field_for_profile_first_name[0]['value'];
     }
     else
       {
         $edit['profile_first_name'] = $account->profile_first_name;
+
       }
-    if(!empty($node->field_for_profile_last_name[0][value])) {
-        $edit['profile_last_name'] = $node->field_for_profile_last_name[0][value];
+    if(!empty($node->field_for_profile_last_name[0]['value'])) {
+        $edit['profile_last_name'] = $node->field_for_profile_last_name[0]['value'];
     }
     else
       {
         $edit['profile_last_name'] = $account->profile_last_name;
       }
     $category = 'Personal Information';
-    profile_save_profile($edit, $user, $category, $register = FALSE);
+    //profile_save_profile($edit, $user, $category, $register = FALSE); *suspect may be failing to properly save at all times, especially across realname fields.
+   crlt_user_save($account, $edit);
   }
   if ($op = 'view') {
+   //dpm($op);
     // Only authenticated users who are admins, staff, a certificate's author, or a certificate's verifier,
     // may view non GTC+ certificate nodes.
     // @TODO - why isn't this in an access_callback function via hook_menu_alter()?
@@ -204,7 +219,7 @@ function crlt_certificate_form_alter(&$form, &$form_state, $form_id) {
       $msg .= '</ul>';
       $form['#prefix'] .= $msg;
     }
-
+    
     // Show helpful links to admins.
     if ($user->uid != 0 && user_access('administer content types')) {
       $destination = implode('/', arg());
