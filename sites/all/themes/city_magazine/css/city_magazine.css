@@ -456,7 +456,7 @@ span.regulat-text {
 .terms ul.links li a {
   font-size:0.83em;
   text-transform:uppercase;
-  height:26px;  
+  height:26px;
 }
 .terms ul.links li a span {
   height:17px;
@@ -1136,7 +1136,7 @@ input.list-add-to-cart:focus {
 }
 
 
-/* 
+/*
  * Overriding System CSS
 */
 ul.menu {
@@ -1746,7 +1746,7 @@ tbody {
   width:100%;
 }
 #block-views-contact_bottom_form-block_1 .resizable-textarea {
-  width:100% 
+  width:100%
 }
 #block-views-contact_bottom_form-block_1 .webform-component-textfield {
   background:url(../images/contact-form-bg.png) right -26px no-repeat;
@@ -1886,7 +1886,7 @@ tbody {
   color:#FFFFFF;
 }
 /*--------------------------------------------------------------*/
-/* View Recent Blog Post 
+/* View Recent Blog Post
 /-------------------------------------------------------------- */
 .view-recent-blog-post .views-row {
   border-bottom:1px solid #d5d5d5;
@@ -1899,7 +1899,7 @@ tbody {
 .view-recent-blog-post .views-field-field-image-fid img {
   display:block;
   padding:3px;
-  border:1px solid #d5d5d5;  
+  border:1px solid #d5d5d5;
 }
 .view-recent-blog-post .views-field-field-image-fid {
   float:left;
@@ -1926,7 +1926,7 @@ tbody {
   clear:both;
 }
 /*--------------------------------------------------------------*/
-/* View Top Stories Of The Week 
+/* View Top Stories Of The Week
 /-------------------------------------------------------------- */
 .view-top-stories-of-the-week .views-row {
   border-bottom:1px solid #d5d5d5;
