@@ -752,11 +752,12 @@ img.right	{
 #block-menu-menu-quick-links ul li a {
 	display: block;
 	padding: 15px 0 15px 75px;
-	background: transparent url(../images/quick-links-icons.png) 10px -50px no-repeat;
+/*	background: transparent url(../images/quick-links-icons.png) 10px -50px no-repeat;*/
 	color: rgb(75,143,174);
 	font-size: 115%;
 	text-decoration: none;
 }
+/*
 #block-menu-menu-quick-links ul li a[title="Multicultural Teaching"] {
 	background: transparent url(../images/quick-links-icons.png) 10px top no-repeat;
 }
@@ -766,7 +767,7 @@ img.right	{
 #block-menu-menu-quick-links ul li a[title="Internationalization"] {
 	background: transparent url(../images/quick-links-icons.png) 10px -150px no-repeat;
 }
-
+*/
 
 /* - - - - - - - - - - - Sidebar menu CONTENT - - - - - - - - - - - - */
 #block-menu_block-1,
