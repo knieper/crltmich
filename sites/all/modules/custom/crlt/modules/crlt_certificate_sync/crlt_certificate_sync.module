@@ -62,7 +62,6 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     crlt_show_messages($messages);
     return;
   }
-
   // Determine the verifier for this consultation. The verifier will be used as
   // the workflow user for the certificate node(s). If the verifier is a
   // 'gtc-YYYY' user, then load up the user marked on the GTC field.
@@ -155,7 +154,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       if (isset($node->field_date[0]['value'])) {
         $certificate->workflow_stamp = strtotime($node->field_date[0]['value']);
       }
-      //$messages[] = array('<pre>' . print_r($certificate, true) . '</pre>');
+    //  $messages[] = array('<pre>' . print_r($certificate, true) . '</pre>');
       node_save($certificate);
       if ($certificate->nid) {
         $messages[] = array(
