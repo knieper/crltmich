@@ -1,7 +1,7 @@
 <?php
 /**
  * CKEditor - The text editor for the Internet - http://ckeditor.com
- * Copyright (c) 2003-2012, CKSource - Frederico Knabben. All rights reserved.
+ * Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
  *
  * == BEGIN LICENSE ==
  *
@@ -133,6 +133,23 @@ function ckeditor_load_skin_options() {
   return $arr;
 }
 
+/**
+ * Return default skin for CKEditor
+ *
+ * @return string
+ */
+function ckeditor_default_skin() {
+  $skin_options = ckeditor_load_skin_options();
+  if (array_key_exists('moono', $skin_options)) {
+    return 'moono';
+  }
+  if (array_key_exists('kama', $skin_options)) {
+    return 'kama';
+  }
+  //if any default theme not exists select first from the list
+  return key(reset($skin_options));
+}
+
 function ckeditor_load_lang_options() {
   $arr = array();
   $editor_local_path = ckeditor_path(TRUE);
@@ -145,8 +162,8 @@ function ckeditor_load_lang_options() {
       $tmp = explode('}', $tmp[2]);
     }
     $langs = explode(',', $tmp[0]);
-    foreach ($langs AS $key => $lang) {
-      preg_match("/(\w+-?\w+):'(\w+)'/i", $lang, $matches);
+    foreach ($langs AS $lang) {
+      preg_match("/'?(\w+-?\w+)'?:'([\w\s\(\)]+)'/i", $lang, $matches);
       if (isset($matches[1]) && isset($matches[2]))
         $arr[$matches[1]] = $matches[2];
     }
@@ -292,6 +309,16 @@ function ckeditor_load_plugins($render = FALSE) {
       'default' => 'f'
     );
   }
+
+  if (file_exists($_editor_path . 'plugins/stylesheetparser/plugin.js')) {
+    $arr['stylesheetparser'] = array(
+      'name' => 'stylesheetparser',
+      'desc' => t('Stylesheet Parser plugin'),
+      'path' => $base_path . $editor_path . 'plugins/stylesheetparser/',
+      'buttons' => FALSE,
+      'default' => 'f'
+  );
+}
 
   /*
    * CKEditor module plugins
@@ -463,9 +490,7 @@ function ckeditor_user_get_setting($user, $profile, $setting) {
     'default' => 't',
     'show_toggle' => 't',
     'popup' => 'f',
-    'skin' => 'kama',
     'toolbar' => 'default',
-    'expand' => 't',
     'width' => '100%',
     'lang' => 'en',
     'auto_lang' => 't',
@@ -481,9 +506,11 @@ function ckeditor_user_get_setting($user, $profile, $setting) {
   return $status;
 }
 
-function ckeditor_user_get_profile($user, $element_id = NULL) {
+function ckeditor_user_get_profile($user, $element_id = 'edit-body', $url = NULL) {
   $rids = array();
-
+  if (is_null($url)) {
+      $url = $_GET['q'];
+  }
   // Since ckeditor_profile_load() makes a db hit, only call it when we're pretty sure
   // we're gonna render ckeditor.
   $sorted_roles = ckeditor_sorted_roles();
@@ -515,7 +542,7 @@ function ckeditor_user_get_profile($user, $element_id = NULL) {
         $profile = ckeditor_profile_load($profile_name);
 
         $conf = $profile->settings;
-        $enabled = ckeditor_is_enabled(empty($conf['excl_mode']) ? '0' : $conf['excl_mode'], empty($conf['excl_regex']) ? '' : $conf['excl_regex'], $element_id, $_GET['q']);
+        $enabled = ckeditor_is_enabled(empty($conf['excl_mode']) ? '0' : $conf['excl_mode'], empty($conf['excl_regex']) ? '' : $conf['excl_regex'], $element_id, $url);
 
         if ($enabled) {
           return $profile;
