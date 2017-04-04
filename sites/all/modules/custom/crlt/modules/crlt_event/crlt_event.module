@@ -81,6 +81,18 @@ function crlt_event_settings_form(&$form_state) {
       '#default_value' => variable_get($key, '')
     );
   }
+  // adding color options for program assistant field - 2/2017 srk
+  $assistant_list = crlt_field_allowed_values_list_as_array('field_program_assistant');
+  foreach($assistant_list as $index => $assistant){
+    $key = crlt_event_series_key('assistant', $index);
+    $form[$key] = array(
+      '#type' => 'textfield',
+      '#size' => 8,
+      '#title' => $assistant,
+      '#default_value' => variable_get($key, '')
+    );
+  }
+  // end addition here
   $form['crlt_flags'] = array(
     '#value' => 'Set the image icons to use for Event flags here.'
   );
@@ -114,6 +126,12 @@ function crlt_event_settings_form_submit($form, &$form_state) {
     $key = crlt_event_series_key('series', $index);
     variable_set($key, $form_state['values'][$key]);
   }
+  //assistants. added 2/2017 srk
+  $assistant_list = crlt_field_allowed_values_list_as_array('field_program_assistant');
+  foreach($assistant_list as $index => $assistant){
+    $key = crlt_event_series_key('assistant', $index);
+    variable_set($key, $form_state['values'][$key]);
+  }
   // Flags.
   $flags = crlt_field_allowed_values_list_as_array('field_event_flag');
   foreach ($flags as $index => $flag) {
@@ -135,6 +153,10 @@ function crlt_event_series_key($type, $index) {
       break;
     case 'flags':
       $key .= 'crlt_event_flags';
+      break;
+//adding 2/2017 srk
+    case 'assistant':
+      $key .= 'crlt_event_assistant';
       break;
   }
   $key .= '_' . $index;
@@ -166,40 +188,40 @@ function crlt_event_signup_cancel($signup, $node) {
  * Handles the synchronization of an event's signup with the attendee's certificates.
  */
 function crlt_event_signup_synchronization($mode, $signup) {
-  
+
   // If the form_data isn't already an array, unserialize it.
   if  (!is_array($signup->form_data)) {
     $signup->form_data = unserialize($signup->form_data);
   }
-  
+
   // Build a messages array so we can let admins know what is happening later
   // on.
   $messages = array();
 
   //$messages[] = array('crlt_event_signup_synchronization (' . $mode . ')');
   //$messages[] = array('<pre>' . print_r($signup, true) . '</pre>');
-  
+
   // The status on the event signup has changed...
-  
+
   // Determine the attendance for this signup.
   $attended = $signup->attended;
   if (!isset($signup->attended) || empty($signup->attended)) {
     $attended = db_result(db_query("SELECT attended from {signup_log} WHERE sid = %d", $signup->sid));
   }
-  
+
   // If there is no attendance record on this signup, then we don't have any work to do.
   if (!isset($attended)) {
     //$messages[] = array('No attendance record, nothing to do...');
     crlt_show_messages($messages);
     return;
   }
-  
+
   // There is some kind of attendance record for this event, handle it later on
   // depending on the attendance value.
   // 0 = did not attend
   // 1 = attended
   // 2 = partially attended
-  
+
   // Let's first figure out which certificate(s) (if any) would be earned from
   // having attended this event.
 
@@ -218,7 +240,7 @@ function crlt_event_signup_synchronization($mode, $signup) {
     crlt_show_messages($messages);
     return;
   }
-  
+
   // If the Rank on the signup is not grad student, then we won't be creating a
   // certificate. Note, we can't use the Rank value attached to the user account
   // because it may not have been updated to the value present on the signup
@@ -237,7 +259,7 @@ function crlt_event_signup_synchronization($mode, $signup) {
     crlt_show_messages($messages);
     return;
   }
-  
+
   // Now that we've figured out which certificate(s) may potentially be earned
   // here, let's figure out if we're creating a new, or updating an existing,
   // certificate node. We'll assume we're creating a new one, unless we prove
@@ -246,10 +268,10 @@ function crlt_event_signup_synchronization($mode, $signup) {
   //$certificate_nid = crlt_event_signup_get_certificate_nid($type, $account->uid, $signup->sid);
   //code was passing nid but the database stores the event id that the signup is associated with srk 3-12-16
   $certificate_nid = crlt_event_signup_get_certificate_nid($type, $account->uid, $event->nid);
-  
+
   if ($certificate_nid) { $new = FALSE; }
   //$messages[] = array('New Node: ' . $new);
-  
+
 
   // If a certificate does not exist for this signup (aka new certificate), and
   // this signaup is marked as attended, create a new certificate node.
@@ -418,4 +440,3 @@ function crlt_event_eligible_for_dual_certificate($event) {
   }
   return $dual_certificates;
 }
-

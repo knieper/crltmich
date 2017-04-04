@@ -37,9 +37,15 @@
       // Color the row's event title column  according to the event type.
       // This data is provided by our hook_views_pre_render() implementation.
       $style_attribute = '';
+      $style_attribute_assistant = '';
       if (isset($view->crlt_event_series_bg_colors[$count]) && $view->crlt_event_series_bg_colors[$count] != '') {
         $style_attribute = 'style="background-color: ' . $view->crlt_event_series_bg_colors[$count] . '"';
       }
+      //added assistant color coding 4/2017 srk
+      if (isset($view->crlt_event_assistant_bg_colors[$count]) && $view->crlt_event_assistant_bg_colors[$count] != ''){
+        $style_attribute_assistant = 'style="background-color: ' . $view->crlt_event_assistant_bg_colors[$count]. '"';
+      }
+      //end added code...also addition on line 61 4/2017 srk
       // Add a class name to specify the week number, so we can highlight weeks in the table.
       $week_number = intval(date('W', strtotime($view->result[$count]->node_data_field_event_dates_field_event_dates_value)));
       $week_class = "crlt_even_week";
@@ -52,7 +58,7 @@
         <?php
           $column = 0;
           foreach ($row as $field => $content): ?>
-          <td class="views-field views-field-<?php print $fields[$field]; ?>" <?php if ($field == 'title') { print $style_attribute; } ?>>
+          <td class="views-field views-field-<?php print $fields[$field]; ?>" <?php if ($field == 'title') { print $style_attribute; } if ($field == 'field_program_assistant_value'){ print $style_attribute_assistant; }?>>
             <?php
               // If we're on the first column, and there are event flag icons to render, render them.
               if ($column == 0) {
@@ -72,4 +78,3 @@
     <?php endforeach; ?>
   </tbody>
 </table>
-
