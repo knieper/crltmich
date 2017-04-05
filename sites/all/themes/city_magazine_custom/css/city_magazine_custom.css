@@ -294,7 +294,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #middle-container {
-	background: rgba(187,213,231,.7);
+	/*background: rgba(187,213,231,.7);*/
+	background: rgba(255,255,255, .7);
 	padding-bottom: 65px;
 	padding-bottom: 0;
 }
@@ -307,8 +308,9 @@ body.no-preface-upper-top #middle-container {
 }
 #content-group {
 	position: relative;
-	background: rgb(232, 239,243);  /* for IE  */
-	background: rgba(255,255,255,.8);
+	/*background: rgb(232, 239,243);  /* for IE  */
+	/*background: rgba(255,255,255,.8);*/
+	background: white;
 	/*-webkit-box-shadow:  5px 0px 3px rgba(30, 30, 30, 0.5);
 	-moz-box-shadow:     5px 0px 3px rgba(30, 30, 30, 0.5);
 	box-shadow:          5px 0px 3px rgba(30, 30, 30, 0.5);*/
@@ -335,8 +337,8 @@ body.no-preface-upper-top #middle-container {
 #footer-wrapper {
 	background: none;
 	background: rgb(2,56,103);
-	-webkit-box-shadow: inset 0px 5px 6px 0px rgba(1, 1, 1, .6);
-    box-shadow: inset 0px 5px 6px 0px rgba(1, 1, 1, .6);
+	/*-webkit-box-shadow: inset 0px 5px 6px 0px rgba(1, 1, 1, .6);
+    box-shadow: inset 0px 5px 6px 0px rgba(1, 1, 1, .6);*/
 }
 #footer-message-wrapper,
 .footer-message-wrapper {
@@ -668,9 +670,9 @@ img.right	{
 }
 #sidebar-last {
 	background: rgb(187,213,231);
-	-webkit-box-shadow: inset 5px 0px 3px rgba(30, 30, 30, 0.5);
-	-moz-box-shadow:    inset 5px 0px 3px rgba(30, 30, 30, 0.5);
-	box-shadow:         inset 5px 0px 3px rgba(30, 30, 30, 0.5);
+	-webkit-box-shadow: inset 1px 0px 1px rgba(30, 30, 30, 0.5);
+	-moz-box-shadow:    inset 1px 0px 1px rgba(30, 30, 30, 0.5);
+	box-shadow:         inset 1px 0px 1px rgba(30, 30, 30, 0.5);
 }
 #sidebar-last .block {
 	padding-bottom: 0;
@@ -739,19 +741,21 @@ img.right	{
 }
 #block-menu-menu-quick-links ul li {
 	list-style: none;
-	background: transparent url(../images/quick-links-bkgd.gif) left bottom repeat-x;
+	/*background: transparent url(../images/quick-links-bkgd.gif) left bottom repeat-x;*/
+	background: #FFF766;
 	margin: 0;
 	padding: 0 0 2px 0;
- 	-webkit-box-shadow: inset 5px 0px 2px rgba(30, 30, 30, 0.5);
-	-moz-box-shadow:    inset 5px 0px 2px rgba(30, 30, 30, 0.5);
-	box-shadow:         inset 5px 0px 2px rgba(30, 30, 30, 0.5);
+  -webkit-box-shadow: inset 1px 0px 1px rgba(30, 30, 30, 0.5);
+	-moz-box-shadow:    inset 1px 0px 1px rgba(30, 30, 30, 0.5);
+	box-shadow:         inset 1px 0px 1px rgba(30, 30, 30, 0.5);
 }
 #block-menu-menu-quick-links ul li:hover,
 #block-menu-menu-quick-links ul li:focus {
-	background: transparent url(../images/quick-links-bkgd-hover.gif) left bottom repeat-x;
- 	-webkit-box-shadow: inset 5px 0px 2px rgba(30, 30, 30, 0.5);
-	-moz-box-shadow:    inset 5px 0px 2px rgba(30, 30, 30, 0.5);
-	box-shadow:         inset 5px 0px 2px rgba(30, 30, 30, 0.5);
+	/*background: transparent url(../images/quick-links-bkgd-hover.gif) left bottom repeat-x;*/
+	background: #FFF200;
+ 	-webkit-box-shadow: inset 1px 0px 1px rgba(30, 30, 30, 0.5);
+	-moz-box-shadow:    inset 1px 0px 1px rgba(30, 30, 30, 0.5);
+	box-shadow:         inset 1px 0px 1px rgba(30, 30, 30, 0.5);
 }
 #block-menu-menu-quick-links ul li a {
 	display: block;
