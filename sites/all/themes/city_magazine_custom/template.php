@@ -263,8 +263,15 @@ function city_magazine_custom_preprocess_page(&$variables) {
 function city_magazine_custom_links($links, $attributes = array('class' => 'links')) {
   $output = '';
   foreach($links as $key => $value){
-    if($key == 'taxonomy_term_578'){
-      unset($links['taxonomy_term_578']);
+    switch($key){
+      case 'taxonomy_term_578':
+        unset($links['taxonomy_term_578']);
+      case 'taxonomy_term_579':
+        unset($links['taxonomy_term_579']);
+      case 'taxonomy_term_580':
+        unset($links['taxonomy_term_580']);
+      default:
+        break;
     }
   }
   if (count($links) > 0) {
