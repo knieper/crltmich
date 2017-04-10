@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * Implementation of hook_context_plugins().
+ */
+function context_vocabulary_context_plugins() {
+  $plugins = array();
+  $plugins['context_vocabulary_context_condition_vid'] = array(
+    'handler' => array(
+      'path' => drupal_get_path('module', 'context_vocabulary') .'/plugins',
+      'file' => 'context_vocabulary_context_condition_vid.inc',
+      'class' => 'context_vocabulary_context_condition_vid',
+      'parent' => 'context_condition_node',
+    ),
+  );
+  return $plugins;
+}
+
+/**
+ * Implementation of hook_context_registry().
+ */
+function context_vocabulary_context_registry() {
+  return array(
+    'conditions' => array(
+      'vid' => array(
+        'title' => t("Vocabulary"),
+        'plugin' => 'context_vocabulary_context_condition_vid',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function context_vocabulary_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($op == 'view' && $a4) {
+    if ($plugin = context_get_plugin('condition', 'vid')) {
+      $plugin->execute($node, $op);
+    }
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function context_vocabulary_form_alter(&$form, $form_state, $form_id) {
+  // Prevent this from firing on admin pages... damn form driven apis...
+  if ($form['#id'] === 'node-form' && arg(0) != 'admin') {
+    if ($plugin = context_get_plugin('condition', 'vid')) {
+      $plugin->execute($form['#node'], 'form');
+    }
+  }
+}

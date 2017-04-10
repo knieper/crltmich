@@ -1,7 +1,7 @@
-<?php  
+<?php
 // $Id$
 
-/**		
+/**
  * @file
  * Contains theme override functions and preprocess functions for the theme.
  *
@@ -124,7 +124,7 @@ function city_magazine_custom_preprocess_page(&$vars, $hook) {
 function city_magazine_custom_preprocess_node(&$vars, $hook) {
   $vars['sample_variable'] = t('Lorem ipsum.');
 }
-// */
+//*/
 
 /**
  * Override or insert variables into the comment templates.
@@ -140,7 +140,7 @@ function city_magazine_custom_preprocess_comment(&$vars, $hook) {
 }
 // */
 
-/** 
+/**
  * Override or insert variables into the block templates.
  *
  * @param $vars
@@ -182,7 +182,7 @@ function phptemplate_signup_user_form($node) {
     if ($uid) {
       $account = user_load($uid);
     }
-  } 
+  }
   else if (arg(0) == 'node' && arg(2) == 'signups' && arg(3) == 'add') {
     $account = false;
   }
@@ -190,11 +190,11 @@ function phptemplate_signup_user_form($node) {
   $sql = "SELECT * FROM {profile_fields} WHERE fid IN (2,3,4,5,6) ORDER BY weight ASC ";
   $elements = crlt_generate_user_profile_field_form_elements($sql, $account);
   foreach($elements as $name => $element) {
-    $form['signup_form_data'][$name] = $element; 
+    $form['signup_form_data'][$name] = $element;
   }
 
   // If there are any webform components attached to this node, place the
-  // components on the signup form. 
+  // components on the signup form.
   if (isset($node->webform) && !empty($node->webform['components'])) {
     foreach($node->webform['components'] as $cid => $component) {
       $element = null;
@@ -212,7 +212,7 @@ function phptemplate_signup_user_form($node) {
             $type = 'select';
           }
           else if (!$component['extra']['multiple']) {
-            $type = 'radios'; 
+            $type = 'radios';
           }
         }
         $element = array(
@@ -232,7 +232,7 @@ function phptemplate_signup_user_form($node) {
           $key = $parts[0];
           $value = $parts[1];
           $element['#options'][$key] = $value;
-        } 
+        }
       }
       // File elements cannot be required.
       if ($component['type'] == 'file') {
@@ -253,13 +253,62 @@ function phptemplate_signup_user_form($node) {
   return $form;
 
 }
-
+//I don't think this function is being called correctly. dpm is showing the correct content in $variables. Also the extra templates files doesn't seem to be used 4/2017 srk
 function city_magazine_custom_preprocess_page(&$variables) {
   if(!empty($variables['node']->type)) {
     $variables['template_files'][] = 'page-node-' . $variables['node']->type;
   }
+}
+//combines citymagazine links function with check for reviewed vocabularly taxonomy terms
+function city_magazine_custom_links($links, $attributes = array('class' => 'links')) {
+  $output = '';
+  foreach($links as $key => $value){
+    if($key == 'taxonomy_term_578'){
+      unset($links['taxonomy_term_578']);
+    }
+  }
+  if (count($links) > 0) {
+    $output = '<ul'. drupal_attributes($attributes) .'>';
+    $num_links = count($links);
+    $i = 1;
+    foreach ($links as $key => $link) {
+      $class = $key;
 
+      // Add first, last and active classes to the list of links to help out themers.
+      if ($i == 1) {
+        $class .= ' first';
+      }
+      if ($i == $num_links) {
+        $class .= ' last';
+      }
+      if (isset($link['href']) && $link['href'] == $_GET['q']) {
+        $class .= ' active';
+      }
+      $output .= '<li class="'. $class .'">';
+      if (isset($link['href'])) {
 
+        // Pass in $link as $options, they share the same keys.
+        $link['html'] = TRUE;
+        $output .= l('<span>'. $link['title'] .'</span>', $link['href'], $link);
+      }
+      else if (!empty($link['title'])) {
+
+        // Some links are actually not links, but we wrap these in <span> for adding title and class attributes
+        if (empty($link['html'])) {
+          $link['title'] = check_plain($link['title']);
+        }
+        $span_attributes = '';
+        if (isset($link['attributes'])) {
+          $span_attributes = drupal_attributes($link['attributes']);
+        }
+        $output .= '<span'. $span_attributes .'>'. $link['title'] .'</span>';
+      }
+      $i++;
+      $output .= "</li>\n";
+    }
+    $output .= '</ul>';
+  }
+  return $output;
 }
 
 function city_magazine_custom_date_all_day_label() {
@@ -289,13 +338,13 @@ $element['#title'])) {
 $element['#description'])) {
     $output .= ' <div class="description">'. $element['#description'] ."</div>\n";
   }
-  
+
 
 $output .= " $value\n";
-  
+
 
 $output .= "</div>";
-  return 
+  return
 
 $output;
 }
@@ -310,7 +359,7 @@ $field['multiple'] >= 1) {
     $table_id = $element['#field_name'] .'_values';
     $order_class = $element['#field_name'] .'-delta-order';
     $required = !empty($element['#required']) ? '<span class="form-required" title="'. t('This field is required.') .'">*</span>' : '';
-    
+
 
 $header = array(
       array(
@@ -320,7 +369,7 @@ $header = array(
       t('Order'),
     );
     $rows = array();
-    
+
 
 // Sort items according to '_weight' (needed when the form comes back after
     // preview or failed validation)
@@ -331,7 +380,7 @@ $header = array(
       }
     }
     usort($items, '_content_sort_items_value_helper');
-    
+
 
 // Add the items as table rows.
     foreach ($items as $key => $item) {
@@ -349,7 +398,7 @@ $header = array(
     }
     $output .= theme('table', $header, $rows, array('id' => $table_id, 'class' => 'content-multiple-table'));
     $output .= drupal_render($element[$element['#field_name'] .'_add_more']);
-    
+
 
 drupal_add_tabledrag($table_id, 'order', 'sibling', $order_class);
   }
