@@ -1,0 +1,5 @@
+name = CRLT Notification
+description = The CRLT Notification module. [Because rules cannot natively do loops to send emails to different accounts this is a helper module. Used by the rule to send service providers notices SRK]
+core = 6.x
+package = Other
+dependencies[] = rules

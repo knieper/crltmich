@@ -1,0 +1,56 @@
+<?php
+
+/*
+takes a user uid and calls drupal mail with it.
+*/
+
+function crlt_notification_notify($accountUid, $contextVariables){
+  $account = user_load($accountUid);
+  $params['account'] = $account;
+  if($contextVariables){
+    $params['contextVariables'] = $contextVariables;
+  }
+  drupal_mail('crlt_notification', 'created_notice', $account->mail, user_preferred_language($account), $params);
+}
+
+function crlt_notification_mail($key, &$message, $params) {
+    $language = $message['language'];
+    $variables = user_mail_tokens($params['account'], $language);
+    switch($key) {
+      case 'created_notice':
+        $body = '';
+        $subject = "CRLT Database: ";
+        if ($params['contextVariables']['name']){
+          $subject .= t($params['contextVariables']['name']);
+          $body .= t("Editing user: ".$params['contextVariables']['name']."\n\n");
+        }
+        if($params['contextVariables']['client']){
+           $clients =$params['contextVariables']['client'];
+          foreach($clients as $client){
+          	$clientUid = array_shift($client);
+          	$clientAccount = user_load($clientUid);
+          	$clientRealname = $clientAccount->realname; 
+          	$clientUniqname = $clientAccount->name;
+          	$body .= t("Consultation client: ".$clientRealname."(".$clientUniqname.")\n\n");
+          }
+        }
+        if($params['contextVariables']['node_title']){
+          $subject .= t(" added you to ".$params['contextVariables']['node_title']);
+          $body .= t("Consultation title: ".$params['contextVariables']['node_title']."\n\n");
+        }
+        if($params['contextVariables']['service_date']){
+          $service_date = substr($params['contextVariables']['service_date'], 0, 10);
+          $subject .= t(" on ".$service_date);
+          $body .= t("Consultation date: ".$service_date."\n\n");
+         } 
+
+        if($params['contextVariables']['nid']){
+          $nodePath = "/"."node"."/".$params['contextVariables']['nid'];
+          global $base_url;
+          $body .= $base_url.$nodePath;
+        }
+        $message['subject'] = t($subject, $variables, $language->language);
+        $message['body'][] = t($body, $variables, $language->language);
+        break;
+    }
+  }
