@@ -211,41 +211,50 @@ function crlt_consultation_form_alter(&$form, &$form_state, $form_id) {
     $departments = crlt_consultation_client_profile_field_values(4, array('' => ''));
     $schools = crlt_consultation_client_profile_field_values(3, array('' => ''));
     $ranks = crlt_consultation_client_profile_field_values(2, array('' => ''));
+    //srk added client crlt widget parent so that we'd stop getting the implode errors from form.inc line 888
     $widget =
       theme('textfield', array(
         '#title' => 'Uniqname',
-        '#id' => 'crlt_consultation_client_name'
+        '#id' => 'crlt_consultation_client_name',
+        '#parents' => array('field_client_crlt_widget')
       )) .
       theme('textfield', array(
         '#title' => 'E-mail',
-        '#id' => 'crlt_consultation_client_mail'
+        '#id' => 'crlt_consultation_client_mail',
+        '#parents' => array('field_client_crlt_widget')
       )) .
       theme('textfield', array(
         '#title' => 'First Name',
-        '#id' => 'crlt_consultation_client_first_name'
+        '#id' => 'crlt_consultation_client_first_name',
+        '#parents' => array('field_client_crlt_widget')
       )) .
       theme('textfield', array(
         '#title' => 'Last Name',
-        '#id' => 'crlt_consultation_client_last_name'
+        '#id' => 'crlt_consultation_client_last_name',
+        '#parents' => array('field_client_crlt_widget')
       )) .
       theme('textfield', array(
         '#title' => 'Institution',
-        '#id' => 'crlt_consultation_client_institution'
+        '#id' => 'crlt_consultation_client_institution',
+        '#parents' => array('field_client_crlt_widget')
       )) .
       theme('select', array(
         '#title' => 'School or College',
         '#id' => 'crlt_consultation_client_school',
-        '#options' => $schools
+        '#options' => $schools,
+        '#parents' => array('field_client_crlt_widget')
       )) .
       theme('select', array(
         '#title' => 'Department',
         '#id' => 'crlt_consultation_client_department',
-        '#options' => $departments
+        '#options' => $departments,
+        '#parents' => array('field_client_crlt_widget')
       )) .
       theme('select', array(
         '#title' => 'Role',
         '#id' => 'crlt_consultation_client_rank',
-        '#options' => $ranks
+        '#options' => $ranks,
+        '#parents' => array('field_client_crlt_widget')
       )) .
       '<input type="button" value="Search for Clients" onclick="javascript:crlt_consulation_client_search();" />' .
       '<input type="button" value="Save Client Account" onclick="javascript:crlt_consulation_client_save();" />' .
@@ -362,7 +371,7 @@ if ($uid) {
         drupal_set_message("Created new client ($account_link).");
       }
       else {
-        drupal_set_message("Failed to create client! ($client - $mail)", 'error');
+         drupal_set_message("Failed to create client! ($client - $mail)", 'error');
       }
     }
   }
@@ -390,7 +399,7 @@ if ($uid) {
       }
     }
     else {
-      drupal_set_message("Failed to load consultation node! ({$form_state['values']['nid']})", 'error');
+       drupal_set_message("Failed to load consultation node! ({$form_state['values']['nid']})", 'error');
     }
   }
   drupal_goto('node/' . $form_state['values']['nid']);
@@ -443,4 +452,3 @@ function crlt_consultation_batch_service_provider_finished($success, $results, $
   drupal_set_message($message);
   drupal_set_message(l('Run Batch Again', 'crlt/consultation/batch'));
 }
-
