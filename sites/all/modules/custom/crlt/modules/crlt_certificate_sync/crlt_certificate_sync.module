@@ -71,20 +71,19 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     $verifier = user_load($node->field_consultation_serv_provider[0]['uid']);
     if ($verifier) {
       if (strpos($verifier->name, 'gtc-') !== FALSE || strpos($verifier->name, 'gtcs-') !== FALSE) {
-
         $verifier = user_load($node->field_gtc[0]['value']);
-     
         if (!$verifier) {
           $verifier = user_load($node->field_consultation_serv_provider[0]['uid']);
-
-          if (crlt_is_admin($user)) {
+          //don't display the messages unless the user is an admin and is not the crlt_webform_node user
+          if (crlt_is_admin($user) || $user->uid != 59908) {
             $messages[] = array("A GTC was selected as the service provider for consultation ($node->nid), but we failed to load the specified GTC account ({$node->field_gtc[0]['value']}). So we are going to use $verifier->name instead!", 'warning');
           }
         }
       }
     }
     else {
-      if (is_array($user->roles) && in_array('admin', $user->roles) || in_array('CRLT Staff', $user->roles)) {
+      if (crlt_is_admin($user) || $user->uid != 59908){
+
         $messages[] = array("Failed to load verifier ({$node->field_consultation_serv_provider[0]['uid']}) for consultation ($node->nid).", 'error');
       }
       return;
@@ -99,7 +98,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     $account = user_load($client['uid']);
   //  dpm($account);
     if (!$account) {
-      if (is_array($user->roles) && in_array('admin', $user->roles) || in_array('CRLT Staff', $user->roles)) {
+      if (crlt_is_admin($user) || $user->uid != 59908){
         $messages[] = array("Failed to load user account ({$client['uid']}) for consultation certificate synchronization!", 'error');
       }
       return;
