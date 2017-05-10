@@ -74,7 +74,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         $verifier = user_load($node->field_gtc[0]['value']);
         if (!$verifier) {
           $verifier = user_load($node->field_consultation_serv_provider[0]['uid']);
-          //don't display the messages unless the user is an admin and do not diplay on MSF form created certs so filter out users that are the crlt_webform_node 
+          //don't display the messages unless the user is an admin and do not diplay on MSF form created certs so filter out users that are the crlt_webform_node
           if (crlt_is_admin($user) && $user->uid != 59908) {
             $messages[] = array("A GTC was selected as the service provider for consultation ($node->nid), but we failed to load the specified GTC account ({$node->field_gtc[0]['value']}). So we are going to use $verifier->name instead!", 'warning');
           }
@@ -108,7 +108,6 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     // for them.
     if (!isset($account->Rank) || $account->Rank != 'Graduate Student') {
       if (crlt_is_admin($user) && $user->uid != 59908){
-        dpm($user->uid);
         $messages[] = array("Client ($account->name) is not a grad student, skipping certificate synchronization");
       }
       continue;
