@@ -107,7 +107,7 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     // If the client is not a grad student, we don't process any certificates
     // for them.
     if (!isset($account->Rank) || $account->Rank != 'Graduate Student') {
-      if (is_array($user->roles) && in_array('admin', $user->roles) || in_array('CRLT Staff', $user->roles)) {
+      if (crlt_is_admin($user) || $user->uid != 59908){
         $messages[] = array("Client ($account->name) is not a grad student, skipping certificate synchronization");
       }
       continue;
