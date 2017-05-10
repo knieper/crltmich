@@ -68,20 +68,15 @@ function crlt_certificate_sync_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   // 'gtc-YYYY' user, then load up the user marked on the GTC field.
   $verifier = null;
   if ($node->field_consultation_serv_provider[0]['uid']) {
-    dpm($node->field_consultation_serv_provider[0]['uid']);
-    dpm($node->field_client[0]['uid']); /*this is the MSF submitter*/
-    dpm($user);
     $verifier = user_load($node->field_consultation_serv_provider[0]['uid']);
-  //  dpm($verifier);
     if ($verifier) {
-    //  dpm($verifier)
       if (strpos($verifier->name, 'gtc-') !== FALSE || strpos($verifier->name, 'gtcs-') !== FALSE) {
-      //  dpm('has gtc');
+
         $verifier = user_load($node->field_gtc[0]['value']);
-        //dpm('new verifer '.$verifier);
+     
         if (!$verifier) {
           $verifier = user_load($node->field_consultation_serv_provider[0]['uid']);
-        //  dpm('last '.$verifier);
+
           if (crlt_is_admin($user)) {
             $messages[] = array("A GTC was selected as the service provider for consultation ($node->nid), but we failed to load the specified GTC account ({$node->field_gtc[0]['value']}). So we are going to use $verifier->name instead!", 'warning');
           }
