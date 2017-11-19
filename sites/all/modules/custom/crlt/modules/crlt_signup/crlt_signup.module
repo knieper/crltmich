@@ -467,10 +467,11 @@ function crlt_signup_spreadsheet_download($nid) {
             }
           }
         }
+        //added in case the question has multiple values and therefore is an array SRK 11-18-17
         if(is_array($value)){
           $newvalue = "";
           foreach($value as $avalue){
-            $newvalue .= $avalue;
+            $newvalue .= $avalue.'; ';
           }
           $value = $newvalue;
         }
