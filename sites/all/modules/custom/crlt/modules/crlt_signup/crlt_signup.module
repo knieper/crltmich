@@ -37,7 +37,7 @@ function crlt_signup_form_alter(&$form, &$form_state, $form_id) {
 
   // Make modifications to the signup form.
   if ($form_id == 'signup_form') {
-    
+
     // Attach a custom validate and submit handler.
     $form['#validate'][] = 'crlt_signup_form_validate';
     $form['#submit'][] = 'crlt_signup_form_submit';
@@ -48,10 +48,10 @@ function crlt_signup_form_alter(&$form, &$form_state, $form_id) {
                 '+ ' . l('Events Calendar', 'eventscalendar');
      //adding an initialization of '#prefix', 1/16 SRK
      $form['#prefix'] = isset($form['#prefix']) ? $form['#prefix'] : '';
-     //returning to original code           
+     //returning to original code
       $form['#prefix'] .= $prefix;
     }
-    
+
     // If there is a webform file component present on the form, attach a custom
     // submission handler for it. Also attach the proper enctype to the form.
     if (
@@ -74,11 +74,11 @@ function crlt_signup_form_alter(&$form, &$form_state, $form_id) {
         }
       }
     }
-    
+
   }
   // Make modifications to the signup edit form.
   else if ($form_id == 'signup_edit_form') {
-    // Note, it seems 'not possible' to attach a custom submit handler to this form. 
+    // Note, it seems 'not possible' to attach a custom submit handler to this form.
     // Place a link to the 'bulk register user' widget on the front of the form for admins.
     if ($user->uid && (in_array('admin', $user->roles) || in_array('CRLT Staff', $user->roles))) {
       $prefix = '+ ' . l('CRLT Signup Overview', 'crlt/signup/overview') . '<br />' .
@@ -152,7 +152,7 @@ function crlt_signup_form_submit($form, &$form_state) {
 }
 
 /**
- * The form to bulk signup users for an event. 
+ * The form to bulk signup users for an event.
  */
 function crlt_signup_bulk_users($form, &$form_state) {
   $form = array();
@@ -394,7 +394,7 @@ function crlt_signup_spreadsheet_download($nid) {
   // Render the column headers...
   $columns = array_keys(get_object_vars($results[0]));
   // We can ignore most of the default column headers provided by views
-  // since most are not needed or will be available in the custom signup 
+  // since most are not needed or will be available in the custom signup
   // form data later.
   $ignore_columns = array(
     'sid',
@@ -467,7 +467,14 @@ function crlt_signup_spreadsheet_download($nid) {
             }
           }
         }
-        
+        if(is_array($value)){
+          $newvalue = "";
+          foreach($value as $avalue){
+            $newvalue .= $avalue;
+          }
+          $value = $newvalue;
+        }
+
       }
       $row .= '"' . strip_tags($value) . '",';
     }
@@ -495,9 +502,9 @@ function crlt_signup_form_file_validate($form, &$form_state) {
     foreach($form['collapse']['signup_user_form']['signup_form_data'] as $name => $element) {
       if (!is_array($element)) { continue; }
       if ($element['#type'] != 'file') { continue; }
-      
+
       $file = file_save_upload('signup_form_data');
-    
+
       // If the file passed validation:
       if (isset($file->filename)) {
         // Move the file, into the Drupal file system
@@ -518,7 +525,7 @@ function crlt_signup_form_file_validate($form, &$form_state) {
       }
     }
   }
-  
+
 }
 
 /**
@@ -541,4 +548,3 @@ function crlt_signup_form_file_submit($form, &$form_state) {
     }
   }
 }
-
