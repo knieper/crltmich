@@ -471,7 +471,9 @@ function crlt_signup_spreadsheet_download($nid) {
         if(is_array($value)){
           $newvalue = "";
           foreach($value as $avalue){
-            $newvalue .= $avalue.'; ';
+            if($avalue != 0){
+              $newvalue .= $avalue.'; ';
+            }
           }
           $value = $newvalue;
         }
