@@ -110,6 +110,9 @@ function print_pdf_generate_path($path, $cid = NULL, $pdf_filename = NULL) {
 function print_pdf_generate_html($print, $html, $filename = NULL) {
   $print_pdf_pdf_tool = variable_get('print_pdf_pdf_tool', PRINT_PDF_PDF_TOOL_DEFAULT);
 
+  // Remove all scripts due to security concerns.
+  $html = preg_replace('!<script(.*?)>(.*?)</script>!is', '', $html);
+
   if (basename($print_pdf_pdf_tool) == 'dompdf_config.inc.php') {
     return _print_pdf_dompdf($print, $html, $filename);
   }
@@ -380,8 +383,8 @@ function _print_pdf_tcpdf($print, $html, $filename = NULL) {
  */
 function _print_pdf_wkhtmltopdf($print, $html, $filename = NULL) {
   $print_pdf_pdf_tool = variable_get('print_pdf_pdf_tool', PRINT_PDF_PDF_TOOL_DEFAULT);
-  $print_pdf_paper_size = variable_get('print_pdf_paper_size', PRINT_PDF_PAPER_SIZE_DEFAULT);
-  $print_pdf_page_orientation = variable_get('print_pdf_page_orientation', PRINT_PDF_PAGE_ORIENTATION_DEFAULT);
+  $print_pdf_paper_size = escapeshellarg(variable_get('print_pdf_paper_size', PRINT_PDF_PAPER_SIZE_DEFAULT));
+  $print_pdf_page_orientation = escapeshellarg(variable_get('print_pdf_page_orientation', PRINT_PDF_PAGE_ORIENTATION_DEFAULT));
   $print_pdf_content_disposition = variable_get('print_pdf_content_disposition', PRINT_PDF_CONTENT_DISPOSITION_DEFAULT);
   $print_pdf_wkhtmltopdf_options = variable_get('print_pdf_wkhtmltopdf_options', PRINT_PDF_WKHTMLTOPDF_OPTIONS);
 
@@ -390,6 +393,9 @@ function _print_pdf_wkhtmltopdf($print, $html, $filename = NULL) {
   if (function_exists('token_replace') && !empty($print_pdf_wkhtmltopdf_options)) {
     $print_pdf_wkhtmltopdf_options = token_replace($print_pdf_wkhtmltopdf_options, 'node', $print['node'], TOKEN_PREFIX, TOKEN_SUFFIX, array('clear' => TRUE));
   }
+
+  // Prevent options that could result in execution of arbitrary commands.
+  $print_pdf_wkhtmltopdf_options = escapeshellcmd($print_pdf_wkhtmltopdf_options);
 
   $version = _print_pdf_wkhtmltopdf_version();
 
